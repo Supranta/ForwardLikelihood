@@ -27,13 +27,12 @@ theta_init_mean, theta_init_spread, flow_model_labels, simple_labels = flow_para
 catalog_objs = []
 
 for i, catalog in enumerate(catalogs):
-        v_data_type, rescale_distance, file_format, v_data_file = catalog
-
+        
+        v_data_type, rescale_distance, v_data_file = catalog
         obj = catalog_obj(v_data_type, v_data_file,\
                     rescale_distance, num_params,\
                     vary_sig_v,\
                     v_field, delta_field, coord_system)
-
         catalog_objs.append(obj)
         cat_init_mean, cat_init_spread = obj.pos0()
         num_params += obj.num_params()
@@ -72,19 +71,21 @@ if(fit_method=='mcmc'):
 
 elif(fit_method=='optimize'):
         from scipy.optimize import fmin_powell
+        print(theta_init_mean)
         opt_value = fmin_powell(fwd_objective, theta_init_mean, args=(catalog_objs,))
         uncertainty_arr = np.zeros(len(theta_init_mean))
         for i in range(len(theta_init_mean)):
-                uncertainty_arr[i] = uncertainty(fwd_objective, opt_value, i, (catalog_objs,), 0.1)
+                uncertainty_arr[i] = uncertainty(fwd_objective, opt_value, i, (catalog_objs,), 0.05)
         print(opt_value, uncertainty_arr)
         f = open(output_dir+'/results.txt','w')
         print('Writing results')
         for i in range(N_FLOW_PARAMS):
                 f.write(simple_labels[i]+': %2.3f +/- %2.3f \n' %(opt_value[i],uncertainty_arr[i]))
+        n = N_FLOW_PARAMS
         for i in range(NCAT):
                 f.write('\n Catalog %d: \n'%(i))
-                catalog = catalogs[i]
-                v_data_type, rescale_distance, _, _ = catalog
-                if(rescale_distance):
-                        f.write('htilde: %2.3f +/- %2.3f \n' %(opt_value[i+N_FLOW_PARAMS],uncertainty_arr[i+N_FLOW_PARAMS]))
+                catalog_obj = catalog_objs[i]
+                for j in range(catalog_obj.num_params()):
+                        f.write('parameter%d : %2.4f +/- %2.4f\n'%(j,opt_value[n+j],uncertainty_arr[n+j]))
+                n += catalog_obj.num_params()
         f.close()

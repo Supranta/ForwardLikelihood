@@ -18,3 +18,10 @@ def z_pred(r, r_hat, cosmo_pars, interpolating_funcs, V_ext, beta):
 
 def z_obs(r_hMpc, V):
     return (r_hMpc*100 + V)/c
+
+def r_from_mu(mu, cosmo_pars=[0.3,0.7]):
+    dL = 10**(mu/5.0 - 5.0)
+    r_hMpc = dL
+    for i in range(4):
+        r_hMpc = dL/(1.0 + z_cos(r_hMpc, cosmo_pars))
+    return r_hMpc

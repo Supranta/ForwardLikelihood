@@ -24,7 +24,7 @@ def flow_params_pos0(vary_sig_v):
     return theta_init_mean, theta_init_spread, labels, simple_labels
 
 class fwd_lkl:
-    def __init__(self, v_data, v_field, delta_field, coord_system, vary_sig_v, N_POINTS=500):
+    def __init__(self, v_data, v_field, delta_field, coord_system, vary_sig_v, N_POINTS=1000):
         self.RA           = v_data[0]
         self.DEC          = v_data[1]
         self.z_obs        = v_data[2]

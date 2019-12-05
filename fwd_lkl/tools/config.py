@@ -38,12 +38,15 @@ def config_fwd_lkl(configfile):
 
 def catalog_parser(config, i):
     v_data_type = config['catalog_'+str(i)]['v_data_type']
-    rescale_distance = bool(config['catalog_'+str(i)]['rescale_distance'] == 'True')
-    file_format = config['catalog_'+str(i)]['file_format']
     data_file = config['catalog_'+str(i)]['data_file']
-    assert v_data_type == 'simple_gaussian'
-    assert file_format == 'csv'
-    return [v_data_type, rescale_distance, file_format, data_file]
+    assert v_data_type == 'simple_gaussian' or v_data_type == 'sn_lc_fit'
+    if(v_data_type=='simple_gaussian'):
+        rescale_distance = bool(config['catalog_'+str(i)]['rescale_distance'] == 'True')
+        add_sigma_int = bool(config['catalog_'+str(i)]['add_sigma_int'] == 'True')
+    else:
+        rescale_distance = None
+        add_sigma_int = None
+    return [v_data_type, rescale_distance, add_sigma_int, data_file]
 
 def analyze_fwd_lkl(configfile):
     """
