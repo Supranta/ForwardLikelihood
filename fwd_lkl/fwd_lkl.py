@@ -45,6 +45,16 @@ class fwd_lkl:
         self.precomputed = [r, V_r, delta]
 
 
+    def p_r(self, catalog_theta):
+        d, sigma_d = self.d_sigmad(catalog_theta)
+        r, V_r, delta = self.precomputed
+
+        cartesian_pos_r = (np.expand_dims(self.r_hat.T, axis=1)*np.tile(np.expand_dims(r, axis=0),(1,1,3)))
+        density_term = (1.0 + delta).T
+
+        delta_d = (r-d)
+        return np.exp(-0.5*delta_d*delta_d / sigma_d / sigma_d)*density_term
+
     def catalog_lnprob(self, params, cosmo_pars):
         flow_params = params[:self.num_flow_params]
         if(self.vary_sig_v):

@@ -29,7 +29,7 @@ class simple_gaussian(fwd_lkl):
             theta_init_spread.append(0.01)
         return theta_init_mean, theta_init_spread
 
-    def p_r(self, catalog_theta):
+    def d_sigmad(self, catalog_theta):
         if(self.rescale_distance):
             htilde = catalog_theta
             sigma_d = self.e_rhMpc
@@ -37,14 +37,7 @@ class simple_gaussian(fwd_lkl):
         else:
             d = self.rhMpc
             sigma_d = self.e_rhMpc
-
-        r, V_r, delta = self.precomputed
-
-        cartesian_pos_r = (np.expand_dims(self.r_hat.T, axis=1)*np.tile(np.expand_dims(r, axis=0),(1,1,3)))
-        density_term = (1.0 + delta).T
-
-        delta_d = (r-d)
-        return np.exp(-0.5*delta_d*delta_d / sigma_d / sigma_d)*density_term
+        return d, sigma_d
 
     def catalog_lnprior(self, catalog_params):
         if(self.rescale_distance):
