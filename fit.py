@@ -27,10 +27,17 @@ theta_init_mean, theta_init_spread, flow_model_labels, simple_labels = flow_para
 catalog_objs = []
 
 for i, catalog in enumerate(catalogs):
-        
-        v_data_type, rescale_distance, v_data_file = catalog
-        obj = catalog_obj(v_data_type, v_data_file,\
-                    rescale_distance, num_params,\
+        if catalog[0]=='simple_gaussian':
+                v_data_type, rescale_distance, add_sigma_int, v_data_file = catalog
+                obj = catalog_obj(v_data_type, v_data_file,\
+                            num_params,\
+                            vary_sig_v,\
+                            v_field, delta_field, coord_system,\
+                            rescale_distance, add_sigma_int)
+        else:
+                v_data_type, v_data_file = catalog
+                obj = catalog_obj(v_data_type, v_data_file,\
+                    num_params,\
                     vary_sig_v,\
                     v_field, delta_field, coord_system)
         catalog_objs.append(obj)
@@ -38,6 +45,7 @@ for i, catalog in enumerate(catalogs):
         num_params += obj.num_params()
         theta_init_mean += cat_init_mean
         theta_init_spread += cat_init_spread
+        print(theta_init_mean, theta_init_spread)
 
 N_FLOW_PARAMS = num_flow_params(vary_sig_v)
 
