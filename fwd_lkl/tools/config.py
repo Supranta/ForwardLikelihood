@@ -43,10 +43,8 @@ def catalog_parser(config, i):
     if(v_data_type=='simple_gaussian'):
         rescale_distance = bool(config['catalog_'+str(i)]['rescale_distance'] == 'True')
         add_sigma_int = bool(config['catalog_'+str(i)]['add_sigma_int'] == 'True')
-    else:
-        rescale_distance = None
-        add_sigma_int = None
-    return [v_data_type, rescale_distance, add_sigma_int, data_file]
+        return [v_data_type, rescale_distance, add_sigma_int, data_file]
+    return [v_data_type, data_file]
 
 def analyze_fwd_lkl(configfile):
     """
