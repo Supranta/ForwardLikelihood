@@ -1,5 +1,5 @@
 import numpy as np
-import sys, time
+import os, sys, time
 from fwd_lkl.fwd_lkl import fwd_lkl, num_flow_params, flow_params_pos0
 from fwd_lkl.tools.config import config_fwd_lkl
 from fwd_lkl.tools.create_obj import catalog_obj
@@ -8,6 +8,7 @@ from fwd_lkl.tools.utils import uncertainty
 import emcee
 
 configfile = sys.argv[1]
+
 cosmo_pars = [0.3, 0.7]
 
 NCAT, fit_method,\
@@ -16,8 +17,9 @@ NCAT, fit_method,\
         N_MCMC, N_WALKERS, N_THREADS, \
             catalogs = config_fwd_lkl(configfile)
 
-output_dir = '/Users/boruah/Desktop/research/bayesian_fwd_modelling/pec_vel_fwd_lkl_module/output/'+output_dir
-
+home_dir = os.path.abspath('.')
+output_dir = home_dir+'/'+output_dir
+data_file = home_dir+'/'+data_file
 delta_field, v_field = process_reconstruction_data(data_file, box_size, corner, N_grid)
 
 num_params = num_flow_params(vary_sig_v)
@@ -29,6 +31,7 @@ catalog_objs = []
 for i, catalog in enumerate(catalogs):
         if catalog[0]=='simple_gaussian':
                 v_data_type, rescale_distance, add_sigma_int, v_data_file = catalog
+                v_data_file = home_dir+'/'+v_data_file
                 obj = catalog_obj(v_data_type, v_data_file,\
                             num_params,\
                             vary_sig_v,\
@@ -73,14 +76,13 @@ if(fit_method=='mcmc'):
                 print("Current Iteration: "+str(i)+", Time Taken: %2.2f \n"%(end_time - start_time))
                 i += 1
                 start_time = time.time()
-
-        output_dir = '/Users/boruah/Desktop/research/bayesian_fwd_modelling/pec_vel_fwd_lkl_module/output/'+output_dir
+                if(i%10==0):
+                    np.save(output_dir+'/chain.npy',sampler.chain[:,:i,:])
         np.save(output_dir+'/chain.npy',sampler.chain)
-
 elif(fit_method=='optimize'):
         from scipy.optimize import fmin_powell
         print(theta_init_mean)
-        opt_value = fmin_powell(fwd_objective, theta_init_mean, args=(catalog_objs,))
+        opt_value = fmin_powell(fwd_objective, theta_init_mean, args=(catalog_objs,), xtol=0.001)
         uncertainty_arr = np.zeros(len(theta_init_mean))
         for i in range(len(theta_init_mean)):
                 uncertainty_arr[i] = uncertainty(fwd_objective, opt_value, i, (catalog_objs,), 0.05)

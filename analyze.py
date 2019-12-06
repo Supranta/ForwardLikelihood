@@ -1,21 +1,33 @@
 import numpy as np
-import sys
+import sys, os
 from fwd_lkl.fwd_lkl import num_flow_params, flow_params_pos0
 from fwd_lkl.tools.config import analyze_fwd_lkl
 from fwd_lkl.tools.plotting import chain_plot
+from fwd_lkl.tools.create_obj import catalog_obj
 import corner
 import matplotlib.pyplot as plt
 
 plt.rc('text',usetex=True)
 plt.rc('font',family='serif')
 
+def num_params(v_data_type, rescale_distance=False):
+    if(v_data_type=='simple_gaussian'):
+        if(rescale_distance):
+            return 1
+        else:
+            return 0
+    elif(v_data_type=='tf'):
+        return 3
+    elif(v_data_type=='sn_lc_fit'):
+        return 4
 configfile = sys.argv[1]
 N_BURN_IN = int(sys.argv[2])
 
 NCAT, vary_sig_v, output_dir, \
         plot_chain, plot_lkl, plot_corner, catalogs = analyze_fwd_lkl(configfile)
 
-output_dir = '/Users/boruah/Desktop/research/bayesian_fwd_modelling/pec_vel_fwd_lkl_module/output/'+output_dir
+home_dir = os.path.abspath('.')
+output_dir = home_dir+'/'+output_dir
 
 N_FLOW_PARAMS = num_flow_params(vary_sig_v)
 print(N_FLOW_PARAMS)
@@ -30,12 +42,19 @@ f = open(output_dir+'/results.txt','w')
 print('Writing results')
 for i in range(N_FLOW_PARAMS):
         f.write(simple_labels[i]+': %2.3f +/- %2.3f \n' %(np.mean(samples[:,i]),np.std(samples[:,i])))
+N = N_FLOW_PARAMS
 for i in range(NCAT):
         f.write('\n Catalog %d: \n'%(i))
         catalog = catalogs[i]
-        v_data_type, rescale_distance, _, _ = catalog
-        if(rescale_distance):
-                f.write('htilde: %2.3f +/- %2.3f \n' %(np.mean(samples[:,i+N_FLOW_PARAMS]),np.std(samples[:,i+N_FLOW_PARAMS])))
+        if catalog[0]=='simple_gaussian':
+            v_data_type, rescale_distance, add_sigma_int, v_data_file = catalog
+            N_PARAMS = num_params(v_data_type, rescale_distance)
+        else:
+            v_data_type, v_data_file = catalog
+            N_PARAMS = num_params(v_data_type)
+        for j in range(N_PARAMS):
+            f.write('parameter %d: %2.3f +/- %2.3f \n' %(j, np.mean(samples[:,i+N]),np.std(samples[:,i+N])))
+        N += N_PARAMS
 f.close()
 
 if(plot_chain):

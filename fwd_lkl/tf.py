@@ -23,7 +23,7 @@ class TF(fwd_lkl):
     def pos0(self):
         theta_init_mean = []
         theta_init_spread = []
-        theta_init_mean = theta_init_mean+[-19., -8., 0.5]
+        theta_init_mean = theta_init_mean+[-21., -6., 0.3]
         theta_init_spread = theta_init_spread + [0.01, 0.01, 0.01]
         return theta_init_mean, theta_init_spread
 

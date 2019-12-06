@@ -5,15 +5,13 @@ import numpy as np
 import pandas as pd
 from .cosmological_funcs import r_from_mu
 
-v_data_directory = '/Users/boruah/Desktop/research/bayesian_fwd_modelling/pec_vel_fwd_lkl_module/data/peculiar_velocity_catalog/'
-
 def catalog_obj(distance_indicator, v_data_file, \
             start_index,\
             vary_sig_v,\
             v_field, delta_field, coord_system,\
             rescale_distance=None, add_sigma_int=None):
 
-    df = pd.read_csv(v_data_directory+v_data_file)
+    df = pd.read_csv(v_data_file)
     RA = np.array(df['RA'])
     DEC = np.array(df['DEC'])
     zCMB = np.array(df['zCMB'])
