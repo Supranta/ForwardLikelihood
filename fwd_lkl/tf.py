@@ -31,7 +31,7 @@ class TF(fwd_lkl):
         a, b, sigma_int = catalog_theta
         mu = self.mag - (a + b * self.eta)
         d = r_from_mu(mu)
-        e_mu = np.sqrt(self.e_mag**2 + (binv*self.e_eta)**2 + sigma_int**2)
+        e_mu = np.sqrt(self.e_mag**2 + (b*self.e_eta)**2 + sigma_int**2)
         sigma_d = e_mu  * (np.log(10)/5.0) * d
         return d, sigma_d
 

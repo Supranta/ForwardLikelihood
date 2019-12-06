@@ -82,7 +82,7 @@ if(fit_method=='mcmc'):
 elif(fit_method=='optimize'):
         from scipy.optimize import fmin_powell
         print(theta_init_mean)
-        opt_value = fmin_powell(fwd_objective, theta_init_mean, args=(catalog_objs,), xtol=0.001)
+        opt_value = fmin_powell(fwd_objective, theta_init_mean, args=(catalog_objs,))
         uncertainty_arr = np.zeros(len(theta_init_mean))
         for i in range(len(theta_init_mean)):
                 uncertainty_arr[i] = uncertainty(fwd_objective, opt_value, i, (catalog_objs,), 0.05)
