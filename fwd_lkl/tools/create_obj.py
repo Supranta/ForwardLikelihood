@@ -41,9 +41,9 @@ def catalog_obj(distance_indicator, v_data_file, \
         obj = sn_lc_fit(v_data, v_field, delta_field, coord_system,\
                                 vary_sig_v, start_index)
     elif(distance_indicator == 'tf'):
-        i = np.array(df['i'])
+        i = np.array(df['mag'])
         eta = np.array(df['eta'])
-        e_i = np.array(df['e_i'])
+        e_i = np.array(df['e_mag'])
         e_eta = np.array(df['e_eta'])
         v_data = [RA, DEC, zCMB, i, eta, e_i, e_eta]
         obj = TF(v_data, v_field, delta_field, coord_system,\
