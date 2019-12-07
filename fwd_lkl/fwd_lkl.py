@@ -12,7 +12,7 @@ def num_flow_params(vary_sig_v):
     return num_params
 
 def flow_params_pos0(vary_sig_v):
-    theta_init_mean   = [0.44, 100., -130.0, 20.0]
+    theta_init_mean   = [1., 0., 0., 0.]
     theta_init_spread = [0.1, 10.0, 10.0, 10.0]
     labels = [r'$\beta$', r'$V_x$', r'$V_y$', r'$V_z$']
     simple_labels = ['beta', 'V_x', 'V_y', 'V_z']
@@ -53,7 +53,7 @@ class fwd_lkl:
         density_term = (1.0 + delta).T
 
         delta_d = (r-d)
-        return np.exp(-0.5*delta_d*delta_d / sigma_d / sigma_d)*density_term
+        return r*r*np.exp(-0.5*delta_d*delta_d / sigma_d / sigma_d)*density_term
 
     def catalog_lnprob(self, params, cosmo_pars):
         flow_params = params[:self.num_flow_params]

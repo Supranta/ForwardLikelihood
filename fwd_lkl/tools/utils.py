@@ -19,27 +19,6 @@ def direction_vector(RA, DEC, coord_system):
     cartesian_pos = to_cartesian(1., [RA, DEC], coord_system)
     return cartesian_pos/np.linalg.norm(cartesian_pos, axis=0)
 
-def uncertainty(f,opt,i, args, eps):
-    x1 = np.array(opt)
-    x1[i] = x1[i] - 2*eps
-    x2 = np.array(opt)
-    x2[i] = x2[i] - eps
-    x3 = np.array(opt)
-    x4 = np.array(opt)
-    x4[i] = x4[i] + eps
-    x5 = np.array(opt)
-    x5[i] = x5[i] + 2*eps
-
-    y1 = f(x1, *args)
-    y2 = f(x2, *args)
-    y3 = f(x3, *args)
-    y4 = f(x4, *args)
-    y5 = f(x5, *args)
-
-    a, b, c = np.polyfit(np.array([x1[i], x2[i], x3[i], x4[i], x5[i]]), np.array([y1, y2, y3, y4, y5]), 2)
-
-    return 1/np.sqrt(a*2.0)
-
 def v_field(cartesian_pos, V_interpolating_funcs):
     v_x_interp, v_y_interp, v_z_interp = V_interpolating_funcs
     v_x = v_x_interp(cartesian_pos)

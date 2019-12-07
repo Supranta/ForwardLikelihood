@@ -4,6 +4,7 @@ def config_fwd_lkl(configfile):
     """
     configfile is the filename of the config file
     """
+    print('Entering config_fwd_lkl....')
     config = configparser.ConfigParser()
     config.read(configfile)
 
@@ -30,6 +31,7 @@ def config_fwd_lkl(configfile):
         catalog_i = catalog_parser(config, i)
         catalogs.append(catalog_i)
 
+    print('Exiting config_fwd_lkl....')
     return NCAT, fit_method, \
             vary_sig_v, output_dir, \
             data_file, coord_system, box_size, corner, N_GRID, \
@@ -40,11 +42,12 @@ def catalog_parser(config, i):
     v_data_type = config['catalog_'+str(i)]['v_data_type']
     data_file = config['catalog_'+str(i)]['data_file']
     assert v_data_type == 'simple_gaussian' or v_data_type == 'sn_lc_fit' or v_data_type == 'tf'
+    rescale_distance = None
+    add_sigma_int = None
     if(v_data_type=='simple_gaussian'):
         rescale_distance = bool(config['catalog_'+str(i)]['rescale_distance'] == 'True')
         add_sigma_int = bool(config['catalog_'+str(i)]['add_sigma_int'] == 'True')
-        return [v_data_type, rescale_distance, add_sigma_int, data_file]
-    return [v_data_type, data_file]
+    return [v_data_type, rescale_distance, add_sigma_int, data_file]
 
 def analyze_fwd_lkl(configfile):
     """

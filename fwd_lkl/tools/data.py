@@ -3,6 +3,7 @@ import numpy as np
 import h5py as h5
 
 def process_reconstruction_data(data_file, box_size, corner, N_grid):
+    print('Entering reconstruction data interpolation....')
     l = box_size/N_grid
 
     X = np.linspace(corner, corner+box_size, N_grid)
@@ -22,4 +23,5 @@ def process_reconstruction_data(data_file, box_size, corner, N_grid):
     delta_data = np.array(f['density'])
     delta_interp = RegularGridInterpolator((X, Y, Z), delta_data)
 
+    print('Exiting reconstruction data interpolation....')
     return delta_interp, [v_x_interp, v_y_interp, v_z_interp]

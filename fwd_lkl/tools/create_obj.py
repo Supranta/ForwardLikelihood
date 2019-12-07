@@ -5,16 +5,18 @@ import numpy as np
 import pandas as pd
 from .cosmological_funcs import r_from_mu
 
-def catalog_obj(distance_indicator, v_data_file, \
+def create_catalog_obj(distance_indicator, v_data_file, \
             start_index,\
             vary_sig_v,\
             v_field, delta_field, coord_system,\
             rescale_distance=None, add_sigma_int=None):
 
+    print('Entering create_catalog_obj....')
     df = pd.read_csv(v_data_file)
     RA = np.array(df['RA'])
     DEC = np.array(df['DEC'])
     zCMB = np.array(df['zCMB'])
+
     if(distance_indicator == 'simple_gaussian'):
         try:
             r_hMpc = np.array(df['rhMpc'])
@@ -48,4 +50,5 @@ def catalog_obj(distance_indicator, v_data_file, \
         v_data = [RA, DEC, zCMB, i, eta, e_i, e_eta]
         obj = TF(v_data, v_field, delta_field, coord_system,\
                                 vary_sig_v, start_index)
+    print('Exiting create_catalog_obj....')
     return obj
