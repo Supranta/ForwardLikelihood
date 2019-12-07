@@ -24,7 +24,7 @@ class TF(fwd_lkl):
         theta_init_mean = []
         theta_init_spread = []
         theta_init_mean = theta_init_mean+[-21., -6., 0.3]
-        theta_init_spread = theta_init_spread + [0.01, 0.01, 0.01]
+        theta_init_spread = theta_init_spread + [0.0025, 0.01, 0.0015]
         return theta_init_mean, theta_init_spread
 
     def d_sigmad(self, catalog_theta):

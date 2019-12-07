@@ -26,14 +26,14 @@ def uncertainty(f, opt, args, eps):
 
     for i in range(len(opt)):
         x1 = np.array(opt)
-        x1[i] = x1[i] - 2*eps
+        x1[i] = x1[i] - 2*eps[i]
         x2 = np.array(opt)
-        x2[i] = x2[i] - eps
+        x2[i] = x2[i] - eps[i]
         x3 = np.array(opt)
         x4 = np.array(opt)
-        x4[i] = x4[i] + eps
+        x4[i] = x4[i] + eps[i]
         x5 = np.array(opt)
-        x5[i] = x5[i] + 2*eps
+        x5[i] = x5[i] + 2*eps[i]
 
         y1 = f(x1, *args)
         y2 = f(x2, *args)

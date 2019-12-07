@@ -52,6 +52,8 @@ for i, catalog in enumerate(catalogs):
         theta_init_spread += cat_init_spread
 
 if(fit_method=='mcmc'):
+        import emcee
+
         print('Sampling parameters.....')
         pos0 = [theta_init_mean + theta_init_spread*np.random.randn(num_params) for i in range(N_WALKERS)]
         sampler = emcee.EnsembleSampler(N_WALKERS, num_params, fwd_lnprob, args=(catalog_objs,), threads=N_THREADS)
@@ -64,7 +66,7 @@ elif(fit_method=='optimize'):
         from scipy.optimize import fmin_powell
 
         opt_value = fmin_powell(fwd_objective, theta_init_mean, args=(catalog_objs,))
-        uncertainty_arr = uncertainty(fwd_objective, opt_value, (catalog_objs,), 0.05)
+        uncertainty_arr = uncertainty(fwd_objective, opt_value, (catalog_objs,), theta_init_spread)
         print(opt_value, uncertainty_arr)
 
         with open(output_dir+'/results.txt','w') as f:

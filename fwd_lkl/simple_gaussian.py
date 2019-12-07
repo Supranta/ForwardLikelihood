@@ -29,7 +29,7 @@ class simple_gaussian(fwd_lkl):
         theta_init_spread = []
         if(self.rescale_distance):
             theta_init_mean.append(1.0)
-            theta_init_spread.append(0.01)
+            theta_init_spread.append(0.005)
         if(self.add_sigma_int):
             theta_init_mean.append(0.1)
             theta_init_spread.append(0.005)

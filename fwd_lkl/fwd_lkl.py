@@ -13,7 +13,7 @@ def num_flow_params(vary_sig_v):
 
 def flow_params_pos0(vary_sig_v):
     theta_init_mean   = [1., 0., 0., 0.]
-    theta_init_spread = [0.1, 10.0, 10.0, 10.0]
+    theta_init_spread = [0.005, 5.0, 5.0, 5.0]
     labels = [r'$\beta$', r'$V_x$', r'$V_y$', r'$V_z$']
     simple_labels = ['beta', 'V_x', 'V_y', 'V_z']
     if(vary_sig_v):
