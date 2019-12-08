@@ -25,3 +25,9 @@ def r_from_mu(mu, cosmo_pars=[0.3,0.7]):
     for i in range(4):
         r_hMpc = dL/(1.0 + z_cos(r_hMpc, cosmo_pars))
     return r_hMpc
+
+def r_from_DA(dA, cosmo_pars=[0.3,0.7]):
+    r_hMpc = dA
+    for i in range(4):
+        r_hMpc = dA * (1.0 + z_cos(r_hMpc, cosmo_pars))
+    return r_hMpc

@@ -1,6 +1,7 @@
 from ..simple_gaussian import simple_gaussian
 from ..sn_lc_fit import sn_lc_fit
 from ..tf import TF
+from ..fp import FP
 import numpy as np
 import pandas as pd
 from .cosmological_funcs import r_from_mu
@@ -49,6 +50,16 @@ def create_catalog_obj(distance_indicator, v_data_file, \
         e_eta = np.array(df['e_eta'])
         v_data = [RA, DEC, zCMB, i, eta, e_i, e_eta]
         obj = TF(v_data, v_field, delta_field, coord_system,\
+                                vary_sig_v, start_index)
+    elif(distance_indicator == 'fp'):
+        s = np.array(df['s'])
+        i = np.array(df['i'])
+        r = np.array(df['r'])
+        e_s = np.array(df['e_s'])
+        e_i = np.array(df['e_i'])
+        e_r = np.array(df['e_r'])
+        v_data = [RA, DEC, zCMB, s, i, r, e_s, e_i, e_r]
+        obj = FP(v_data, v_field, delta_field, coord_system,\
                                 vary_sig_v, start_index)
     print('Exiting create_catalog_obj....')
     return obj

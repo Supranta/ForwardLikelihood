@@ -41,7 +41,7 @@ def config_fwd_lkl(configfile):
 def catalog_parser(config, i):
     v_data_type = config['catalog_'+str(i)]['v_data_type']
     data_file = config['catalog_'+str(i)]['data_file']
-    assert v_data_type == 'simple_gaussian' or v_data_type == 'sn_lc_fit' or v_data_type == 'tf'
+    assert v_data_type == 'simple_gaussian' or v_data_type == 'sn_lc_fit' or v_data_type == 'tf' or v_data_type == 'fp'
     rescale_distance = None
     add_sigma_int = None
     if(v_data_type=='simple_gaussian'):
