@@ -55,8 +55,8 @@ if(fit_method=='mcmc'):
         import emcee
 
         print('Sampling parameters.....')
-        pos0 = [theta_init_mean + theta_init_spread*np.random.randn(num_params) for i in range(N_WALKERS)]
-        sampler = emcee.EnsembleSampler(N_WALKERS, num_params, fwd_lnprob, args=(catalog_objs,), threads=N_THREADS)
+        pos0 = [theta_init_mean + theta_init_spread*np.random.randn(N) for i in range(N_WALKERS)]
+        sampler = emcee.EnsembleSampler(N_WALKERS, N, fwd_lnprob, args=(catalog_objs,), threads=N_THREADS)
 
         sample(sampler, pos0, N_MCMC, output_dir)
 

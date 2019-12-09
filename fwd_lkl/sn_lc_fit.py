@@ -25,7 +25,7 @@ class sn_lc_fit(fwd_lkl):
     def pos0(self):
         theta_init_mean = []
         theta_init_spread = []
-        theta_init_mean = theta_init_mean+[-19.0, 0.162, 3.126, 0.1]
+        theta_init_mean = theta_init_mean+[-18.0, 0.162, 3.126, 0.1]
         theta_init_spread = theta_init_spread + [0.01, 0.001, 0.01, 0.005]
         return theta_init_mean, theta_init_spread
 

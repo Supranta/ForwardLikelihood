@@ -56,6 +56,7 @@ def analyze_fwd_lkl(configfile):
     config = configparser.ConfigParser()
     config.read(configfile)
 
+    coord_system = config['reconstruction']['coord_system']
     NCAT = int(config['default']['NCAT'])
 
     vary_sig_v = bool(config['flow_model']['vary_sig_v']=="True")
@@ -72,5 +73,5 @@ def analyze_fwd_lkl(configfile):
         catalog_i = catalog_parser(config, i)
         catalogs.append(catalog_i)
 
-    return NCAT, vary_sig_v, output_dir, \
+    return coord_system, NCAT, vary_sig_v, output_dir, \
             plot_chain, plot_lkl, plot_corner, catalogs

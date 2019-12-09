@@ -1,4 +1,5 @@
 import numpy as np
+import time
 
 def write_catalog_parameters(f, i, n, opt_value, uncertainty_arr, catalog_objs):
         f.write('\n Catalog %d: \n'%(i))

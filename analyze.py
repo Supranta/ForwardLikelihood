@@ -3,7 +3,8 @@ import sys, os
 from fwd_lkl.fwd_lkl import num_flow_params, flow_params_pos0
 from fwd_lkl.tools.config import analyze_fwd_lkl
 from fwd_lkl.tools.plotting import chain_plot
-from fwd_lkl.tools.create_obj import catalog_obj
+#from fwd_lkl.tools.create_obj import create_catalog_obj
+from fwd_lkl.tools.utils import v_sample_direction_norm
 import corner
 import matplotlib.pyplot as plt
 
@@ -23,7 +24,7 @@ def num_params(v_data_type, rescale_distance=False):
 configfile = sys.argv[1]
 N_BURN_IN = int(sys.argv[2])
 
-NCAT, vary_sig_v, output_dir, \
+coord_system, NCAT, vary_sig_v, output_dir, \
         plot_chain, plot_lkl, plot_corner, catalogs = analyze_fwd_lkl(configfile)
 
 home_dir = os.path.abspath('.')
@@ -49,20 +50,24 @@ if(plot_chain):
 if(plot_corner):
     print('Plotting Flow model corner plot....')
     flow_samples = samples[:,:N_FLOW_PARAMS]
+    V_samples = samples[:,N_FLOW_PARAMS-3:N_FLOW_PARAMS]
     corner.corner(flow_samples, labels=flow_model_labels)
     plt.savefig(output_dir+'/flow_model_corner.png',dpi=150)
+    V_tot, l, b = v_sample_direction_norm(V_samples, coord_system)
+    corner.corner(np.array([V_tot, l, b]).T, labels=[r'$V_{\textrm{ext}}$', '$l$', '$b$'])
+    plt.savefig(output_dir+'/bulk_flow.png',dpi=150)
+    #l[l < 120] += 360
+    f.write('V_ext : %2.1f + %2.1f - %2.1f \n' %(np.mean(V_tot), np.percentile(V_tot, 84)-np.mean(V_tot), np.mean(V_tot)-np.percentile(V_tot, 16)))
+    f.write('l : %2.1f + %2.1f - %2.1f \n' %(np.mean(l), np.percentile(l, 84)-np.mean(l), np.mean(l)-np.percentile(l, 16)))
+    f.write('b : %2.1f + %2.1f - %2.1f \n' %(np.mean(b), np.percentile(b, 84)-np.mean(b), np.mean(b)-np.percentile(b, 16)))
 
 N = N_FLOW_PARAMS
 
 for i in range(NCAT):
     f.write('\n Catalog %d: \n'%(i))
     catalog = catalogs[i]
-    if catalog[0]=='simple_gaussian':
-        v_data_type, rescale_distance, add_sigma_int, v_data_file = catalog
-        N_PARAMS = num_params(v_data_type, rescale_distance)
-    else:
-        v_data_type, v_data_file = catalog
-        N_PARAMS = num_params(v_data_type)
+    v_data_type, rescale_distance, add_sigma_int, v_data_file = catalog
+    N_PARAMS = num_params(v_data_type, rescale_distance)
     for j in range(N_PARAMS):
         f.write('parameter %d: %2.3f +/- %2.3f \n' %(j, np.mean(samples[:,i+N]),np.std(samples[:,i+N])))
     if(N_PARAMS != 0):
