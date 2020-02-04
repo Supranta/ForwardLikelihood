@@ -42,10 +42,10 @@ def catalog_parser(config, i):
     catalog_str = 'catalog_'+str(i)
     v_data_type = config[catalog_str]['v_data_type']
     data_file = config[catalog_str]['data_file']
-    assert v_data_type == 'simple_gaussian' or v_data_type == 'sn_lc_fit' or v_data_type == 'tf' or v_data_type == 'fp'
+    assert v_data_type == 'simple_distance' or v_data_type == 'sn_lc_fit' or v_data_type == 'tf' or v_data_type == 'fp'
     rescale_distance = None
     add_sigma_int = None
-    if(v_data_type=='simple_gaussian'):
+    if(v_data_type=='simple_distance'):
         rescale_distance = bool(config[catalog_str]['rescale_distance'] == 'True')
         add_sigma_int = bool(config[catalog_str]['add_sigma_int'] == 'True')
     lognormal = bool(config[catalog_str]['lognormal'] == "True")

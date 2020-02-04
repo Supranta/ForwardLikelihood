@@ -1,4 +1,4 @@
-from ..simple_gaussian import simple_gaussian
+from ..simple_distance import simple_distance
 from ..sn_lc_fit import sn_lc_fit
 from ..tf import TF
 from ..fp import FP
@@ -18,7 +18,7 @@ def create_catalog_obj(distance_indicator, v_data_file, \
     DEC = np.array(df['DEC'])
     zCMB = np.array(df['zCMB'])
 
-    if(distance_indicator == 'simple_gaussian'):
+    if(distance_indicator == 'simple_distance'):
         try:
             r_hMpc = np.array(df['rhMpc'])
         except:
@@ -30,7 +30,7 @@ def create_catalog_obj(distance_indicator, v_data_file, \
             e_mu = np.array(df['e_mu'])
             e_r_hMpc = e_mu  * (np.log(10)/5.0) * r_hMpc
         v_data = [RA, DEC, zCMB, r_hMpc, e_r_hMpc]
-        obj = simple_gaussian(v_data, v_field, delta_field, coord_system,\
+        obj = simple_distance(v_data, v_field, delta_field, coord_system,\
                                 vary_sig_v, start_index,\
                                 rescale_distance, add_sigma_int, lognormal)
     elif(distance_indicator == 'sn_lc_fit'):
