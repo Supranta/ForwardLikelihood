@@ -9,7 +9,7 @@ from .cosmological_funcs import r_from_mu
 def create_catalog_obj(distance_indicator, v_data_file, \
             start_index,\
             vary_sig_v,\
-            v_field, delta_field, coord_system,\
+            v_field, delta_field, coord_system, lognormal,\
             rescale_distance=None, add_sigma_int=None):
 
     print('Entering create_catalog_obj....')
@@ -32,7 +32,7 @@ def create_catalog_obj(distance_indicator, v_data_file, \
         v_data = [RA, DEC, zCMB, r_hMpc, e_r_hMpc]
         obj = simple_gaussian(v_data, v_field, delta_field, coord_system,\
                                 vary_sig_v, start_index,\
-                                rescale_distance, add_sigma_int)
+                                rescale_distance, add_sigma_int, lognormal)
     elif(distance_indicator == 'sn_lc_fit'):
         mB = np.array(df['mB'])
         c_sn = np.array(df['c'])
@@ -42,7 +42,7 @@ def create_catalog_obj(distance_indicator, v_data_file, \
         e_x1 = np.array(df['e_x1'])
         v_data = [RA, DEC, zCMB, mB, c_sn, x1, e_mB, e_c, e_x1]
         obj = sn_lc_fit(v_data, v_field, delta_field, coord_system,\
-                                vary_sig_v, start_index)
+                                vary_sig_v, start_index, lognormal)
     elif(distance_indicator == 'tf'):
         i = np.array(df['mag'])
         eta = np.array(df['eta'])
@@ -50,7 +50,7 @@ def create_catalog_obj(distance_indicator, v_data_file, \
         e_eta = np.array(df['e_eta'])
         v_data = [RA, DEC, zCMB, i, eta, e_i, e_eta]
         obj = TF(v_data, v_field, delta_field, coord_system,\
-                                vary_sig_v, start_index)
+                                vary_sig_v, start_index, lognormal)
     elif(distance_indicator == 'fp'):
         s = np.array(df['s'])
         i = np.array(df['i'])

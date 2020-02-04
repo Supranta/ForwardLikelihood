@@ -24,11 +24,12 @@ def flow_params_pos0(vary_sig_v):
     return theta_init_mean, theta_init_spread, labels, simple_labels
 
 class fwd_lkl:
-    def __init__(self, v_data, v_field, delta_field, coord_system, vary_sig_v, N_POINTS=1000):
+    def __init__(self, v_data, v_field, delta_field, coord_system, vary_sig_v, lognormal, N_POINTS=1000):
         self.RA           = v_data[0]
         self.DEC          = v_data[1]
         self.z_obs        = v_data[2]
         self.vary_sig_v   = vary_sig_v
+        self.lognormal = lognormal
         self.num_flow_params = num_flow_params(vary_sig_v)
         self.r_hat = direction_vector(self.RA, self.DEC, coord_system)
 
@@ -46,14 +47,18 @@ class fwd_lkl:
 
 
     def p_r(self, catalog_theta):
-        d, sigma_d = self.d_sigmad(catalog_theta)
+        d, sigma_d, e_mu = self.d_sigmad(catalog_theta)
         r, V_r, delta = self.precomputed
 
         cartesian_pos_r = (np.expand_dims(self.r_hat.T, axis=1)*np.tile(np.expand_dims(r, axis=0),(1,1,3)))
         density_term = (1.0 + delta).T
 
-        delta_d = (r-d)
-        return r*r*np.exp(-0.5*delta_d*delta_d / sigma_d / sigma_d)*density_term
+        if(self.lognormal):
+            delta_mu = 5*np.log10(r/d)
+            return r * r * np.exp(-0.5*(delta_mu/e_mu)**2) * density_term
+        else:
+            delta_d = (r-d)
+            return r*r*np.exp(-0.5*delta_d*delta_d / sigma_d / sigma_d)*density_term
 
     def catalog_lnprob(self, params, cosmo_pars):
         flow_params = params[:self.num_flow_params]

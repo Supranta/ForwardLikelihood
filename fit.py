@@ -42,9 +42,9 @@ theta_init_mean, theta_init_spread, flow_model_labels, simple_labels = flow_para
 catalog_objs = []
 
 for i, catalog in enumerate(catalogs):
-        v_data_type, rescale_distance, add_sigma_int, v_data_file = catalog
+        v_data_type, rescale_distance, add_sigma_int, v_data_file, lognormal = catalog
         obj = create_catalog_obj(v_data_type, v_data_file,\
-            N, vary_sig_v, v_field, delta_field, coord_system, rescale_distance, add_sigma_int)
+            N, vary_sig_v, v_field, delta_field, coord_system, lognormal, rescale_distance, add_sigma_int)
         catalog_objs.append(obj)
         cat_init_mean, cat_init_spread = obj.pos0()
         N += obj.num_params()

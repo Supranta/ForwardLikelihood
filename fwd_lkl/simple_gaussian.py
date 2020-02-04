@@ -6,8 +6,8 @@ import numpy as np
 from fwd_lkl.fwd_lkl import fwd_lkl
 
 class simple_gaussian(fwd_lkl):
-    def __init__(self, v_data, v_field, delta_field, coord_system, vary_sig_v, start_index, rescale_distance, add_sigma_int, N_POINTS=500):
-        super().__init__(v_data, v_field, delta_field, coord_system, vary_sig_v)
+    def __init__(self, v_data, v_field, delta_field, coord_system, vary_sig_v, start_index, rescale_distance, add_sigma_int, lognormal, N_POINTS=500):
+        super().__init__(v_data, v_field, delta_field, coord_system, vary_sig_v, lognormal)
         self.rhMpc = v_data[3]
         self.e_rhMpc = v_data[4]
         self.e_V = self.e_rhMpc*100
@@ -46,7 +46,8 @@ class simple_gaussian(fwd_lkl):
             sigma_d = np.sqrt(self.e_rhMpc**2 + sigma_int_d**2)
         else:
             sigma_d = self.e_rhMpc
-        return d, sigma_d
+        e_mu = (5./np.log(10)) * (sigma_d / d)
+        return d, sigma_d, e_mu
 
     def catalog_lnprior(self, catalog_params):
         if(self.rescale_distance):

@@ -7,8 +7,8 @@ from fwd_lkl.fwd_lkl import fwd_lkl
 from .tools.cosmological_funcs import r_from_mu
 
 class sn_lc_fit(fwd_lkl):
-    def __init__(self, v_data, v_field, delta_field, coord_system, vary_sig_v, start_index, N_POINTS=500):
-        super().__init__(v_data, v_field, delta_field, coord_system, vary_sig_v)
+    def __init__(self, v_data, v_field, delta_field, coord_system, vary_sig_v, start_index, lognormal, N_POINTS=500):
+        super().__init__(v_data, v_field, delta_field, coord_system, vary_sig_v, lognormal)
         self.mB = v_data[3]
         self.c_sn = v_data[4]
         self.x1 = v_data[5]
@@ -38,7 +38,7 @@ class sn_lc_fit(fwd_lkl):
         e_mu = np.sqrt(self.e_mB**2 + sigma_int**2)
         sigma_d = e_mu  * (np.log(10)/5.0) * d
 
-        return d, sigma_d
+        return d, sigma_d, e_mu
 
     def catalog_lnprior(self, catalog_params):
         M, alpha, beta_sn, sigma_int = catalog_params
