@@ -1,7 +1,7 @@
 from ..simple_distance import simple_distance
 from ..sn_lc_fit import sn_lc_fit
 from ..tf import TF
-from ..fp import FP
+from ..lxt import LXT
 import numpy as np
 import pandas as pd
 from .cosmological_funcs import r_from_mu
@@ -51,15 +51,13 @@ def create_catalog_obj(distance_indicator, v_data_file, \
         v_data = [RA, DEC, zCMB, i, eta, e_i, e_eta]
         obj = TF(v_data, v_field, delta_field, coord_system,\
                                 vary_sig_v, start_index, lognormal)
-    elif(distance_indicator == 'fp'):
-        s = np.array(df['s'])
-        i = np.array(df['i'])
-        r = np.array(df['r'])
-        e_s = np.array(df['e_s'])
-        e_i = np.array(df['e_i'])
-        e_r = np.array(df['e_r'])
-        v_data = [RA, DEC, zCMB, s, i, r, e_s, e_i, e_r]
-        obj = FP(v_data, v_field, delta_field, coord_system,\
-                                vary_sig_v, start_index)
+    elif(distance_indicator == 'lxt'):
+        T = np.array(df['T'])
+        e_T = np.array(df['e_T'])
+        f = np.array(df['f'])
+
+        v_data = [RA, DEC, zCMB, T, f, e_T]
+        obj = LXT(v_data, v_field, delta_field, coord_system,\
+                                vary_sig_v, start_index, lognormal)
     print('Exiting create_catalog_obj....')
     return obj

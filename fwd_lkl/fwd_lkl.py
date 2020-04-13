@@ -58,7 +58,7 @@ class fwd_lkl:
             return r * r * np.exp(-0.5*(delta_mu/e_mu)**2) * density_term
         else:
             delta_d = (r-d)
-            return r*r*np.exp(-0.5*delta_d*delta_d / sigma_d / sigma_d)*density_term
+            return r * r * np.exp(-0.5*delta_d*delta_d / sigma_d / sigma_d) * density_term
 
     def catalog_lnprob(self, params, cosmo_pars):
         flow_params = params[:self.num_flow_params]
