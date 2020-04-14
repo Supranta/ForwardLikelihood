@@ -14,7 +14,7 @@ def fwd_lnprob(theta, catalog_objs):
         lnprob = 0
         flow_params = theta[:N_FLOW_PARAMS]
         if(vary_sig_v):
-                sig_v, beta, V_x, V_y, V_z = flow_params
+                sig_v = flow_params[0]
                 if(sig_v < 0.0):
                         return -np.inf
         for catalog_obj in catalog_objs:
