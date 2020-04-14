@@ -11,8 +11,9 @@ def config_fwd_lkl(configfile):
     NCAT = int(config['default']['NCAT'])
     fit_method = config['default']['fit_method']
 
-    vary_sig_v   = bool(config['flow_model']['vary_sig_v']=="True")
-    add_monopole = bool(config['flow_model']['add_monopole']=="True")
+    vary_sig_v     = bool(config['flow_model']['vary_sig_v']=="True")
+    add_monopole   = bool(config['flow_model']['add_monopole']=="True")
+    add_quadrupole = bool(config['flow_model']['add_quadrupole']=="True")
 
     output_dir = config['io']['output_dir']
 
@@ -34,7 +35,7 @@ def config_fwd_lkl(configfile):
 
     print('Exiting config_fwd_lkl....')
     return NCAT, fit_method, \
-            vary_sig_v, add_monopole, output_dir, \
+            vary_sig_v, add_monopole, add_quadrupole, output_dir, \
             data_file, coord_system, box_size, corner, N_GRID, \
             N_MCMC, N_WALKERS, N_THREADS, \
                 catalogs

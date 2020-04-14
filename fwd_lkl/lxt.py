@@ -11,8 +11,8 @@ tenpc_in_Mpc = 3.085678e+19
 k = 1e+28/tenpc_in_Mpc
 
 class LXT(fwd_lkl):
-    def __init__(self, v_data, v_field, delta_field, coord_system, vary_sig_v, start_index, lognormal, N_POINTS=1000):
-        super().__init__(v_data, v_field, delta_field, coord_system, vary_sig_v, lognormal)
+    def __init__(self, v_data, v_field, delta_field, coord_system, vary_sig_v, add_monopole, add_quadrupole, start_index, lognormal, N_POINTS=1000):
+        super().__init__(v_data, v_field, delta_field, coord_system, vary_sig_v, add_monopole, add_quadrupole, lognormal)
         self.T    = v_data[3]
         self.flux = v_data[4]
         self.e_T = v_data[5]
