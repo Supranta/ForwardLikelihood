@@ -5,13 +5,15 @@ from .tools.utils import direction_vector
 This class uses forward likelihood method on simple distance data using a Gaussian likelihood for
 P(r|data).
 """
-def num_flow_params(vary_sig_v):
+def num_flow_params(vary_sig_v, add_monopole):
     num_params = 4
     if(vary_sig_v):
         num_params += 1
+    if(add_monopole):
+        num_params += 1
     return num_params
 
-def flow_params_pos0(vary_sig_v):
+def flow_params_pos0(vary_sig_v, add_monopole):
     theta_init_mean   = [1., 0., 0., 0.]
     theta_init_spread = [0.005, 5.0, 5.0, 5.0]
     labels = [r'$\beta$', r'$V_x$', r'$V_y$', r'$V_z$']
@@ -21,16 +23,22 @@ def flow_params_pos0(vary_sig_v):
         theta_init_spread.insert(0, 5.)
         labels.insert(0,r'$\sigma_v$')
         simple_labels.insert(0,'sigma_v')
+    if(add_monopole):
+        theta_init_mean.insert(-1, 0.)
+        theta_init_spread.insert(-1, 5.)
+        labels.insert(0,r'$\V_{mono}$')
+        simple_labels.insert(0,'V_mono')
     return theta_init_mean, theta_init_spread, labels, simple_labels
 
 class fwd_lkl:
-    def __init__(self, v_data, v_field, delta_field, coord_system, vary_sig_v, lognormal, N_POINTS=1000):
+    def __init__(self, v_data, v_field, delta_field, coord_system, vary_sig_v, add_monopole, lognormal, N_POINTS=1000):
         self.RA           = v_data[0]
         self.DEC          = v_data[1]
         self.z_obs        = v_data[2]
         self.vary_sig_v   = vary_sig_v
-        self.lognormal = lognormal
-        self.num_flow_params = num_flow_params(vary_sig_v)
+        self.add_monopole = add_monopole
+        self.lognormal    = lognormal
+        self.num_flow_params = num_flow_params(vary_sig_v, add_monopole)
         self.r_hat = direction_vector(self.RA, self.DEC, coord_system)
 
         V_x_field, V_y_field, V_z_field = v_field
@@ -63,14 +71,23 @@ class fwd_lkl:
     def catalog_lnprob(self, params, cosmo_pars):
         flow_params = params[:self.num_flow_params]
         if(self.vary_sig_v):
-            sig_v, beta, V_x, V_y, V_z = flow_params
+            if(self.add_monopole):
+                sig_v, beta, V_x, V_y, V_z, V_mono = flow_params
+            else:
+                sig_v, beta, V_x, V_y, V_z = flow_params
         else:
             sig_v = 150.
-            beta, V_x, V_y, V_z = flow_params
+            if(self.add_monopole):
+                beta, V_x, V_y, V_z, V_mono = flow_params
+            else:
+                beta, V_x, V_y, V_z = flow_params
         v_bulk = np.array([V_x, V_y, V_z]).reshape((3,1))
         r, V_r, delta = self.precomputed
 
         v_bulk_r = np.sum((v_bulk * self.r_hat), axis=0, keepdims=True)
+        if(self.add_monopole):
+            v_bulk_r += V_mono
+
         N_GAL = self.r_hat.shape[1]
         z_pred_r = ((1 + (v_bulk_r + beta*V_r)/c)*(1 + z_cos(r, cosmo_pars)) - 1.0)
         delta_z_sig_v = c*(z_pred_r - self.z_obs)/(sig_v)

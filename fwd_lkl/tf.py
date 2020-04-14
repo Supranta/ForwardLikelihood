@@ -7,8 +7,8 @@ from fwd_lkl.fwd_lkl import fwd_lkl
 from .tools.cosmological_funcs import r_from_mu
 
 class TF(fwd_lkl):
-    def __init__(self, v_data, v_field, delta_field, coord_system, vary_sig_v, start_index, lognormal, N_POINTS=500):
-        super().__init__(v_data, v_field, delta_field, coord_system, vary_sig_v, lognormal)
+    def __init__(self, v_data, v_field, delta_field, coord_system, vary_sig_v, add_monopole, start_index, lognormal, N_POINTS=500):
+        super().__init__(v_data, v_field, delta_field, coord_system, vary_sig_v, add_monopole, lognormal)
         self.mag = v_data[3]
         self.eta = v_data[4]
         self.e_mag = v_data[5]
