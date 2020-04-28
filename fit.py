@@ -26,6 +26,7 @@ def fwd_objective(theta, catalog_objs):
 
 NCAT, fit_method,\
         vary_sig_v, add_monopole, add_quadrupole, output_dir,\
+        czlow, czhigh,\
         data_file, coord_system, box_size, corner, N_grid,\
         N_MCMC, N_WALKERS, N_THREADS, \
             catalogs = config_fwd_lkl(configfile)
@@ -43,7 +44,7 @@ catalog_objs = []
 
 for i, catalog in enumerate(catalogs):
         v_data_type, rescale_distance, add_sigma_int, v_data_file, lognormal = catalog
-        obj = create_catalog_obj(v_data_type, v_data_file,\
+        obj = create_catalog_obj(v_data_type, v_data_file, czlow, czhigh,\
             N, vary_sig_v, add_monopole, add_quadrupole, v_field, delta_field, coord_system, lognormal, rescale_distance, add_sigma_int)
         catalog_objs.append(obj)
         cat_init_mean, cat_init_spread = obj.pos0()

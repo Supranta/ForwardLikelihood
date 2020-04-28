@@ -6,7 +6,9 @@ import numpy as np
 import pandas as pd
 from .cosmological_funcs import r_from_mu
 
-def create_catalog_obj(distance_indicator, v_data_file, \
+speed_of_light = 300000
+
+def create_catalog_obj(distance_indicator, v_data_file, czlow, czhigh, \
             start_index,\
             vary_sig_v, add_monopole, add_quadrupole,\
             v_field, delta_field, coord_system, lognormal,\
@@ -14,9 +16,16 @@ def create_catalog_obj(distance_indicator, v_data_file, \
 
     print('Entering create_catalog_obj....')
     df = pd.read_csv(v_data_file)
+    zCMB = np.array(df['zCMB'])
+
+    cz = speed_of_light * zCMB
+    select_redshift = (cz > czlow) & (cz > czhigh)
+    df = df[select_redshift]
+    zCMB = np.array(df['zCMB'])
+
     RA = np.array(df['RA'])
     DEC = np.array(df['DEC'])
-    zCMB = np.array(df['zCMB'])
+
 
     if(distance_indicator == 'simple_distance'):
         try:

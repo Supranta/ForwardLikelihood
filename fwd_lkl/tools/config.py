@@ -15,6 +15,13 @@ def config_fwd_lkl(configfile):
     add_monopole   = bool(config['flow_model']['add_monopole']=="True")
     add_quadrupole = bool(config['flow_model']['add_quadrupole']=="True")
 
+    try:
+        czlow = float(config['redshift_select']['czlow'])
+        czhigh = float(config['redshift_select']['czlow'])
+    except:
+        czlow = 0.0
+        czhigh = 20000.
+
     output_dir = config['io']['output_dir']
 
     data_file = config['reconstruction']['data_file']
@@ -35,7 +42,8 @@ def config_fwd_lkl(configfile):
 
     print('Exiting config_fwd_lkl....')
     return NCAT, fit_method, \
-            vary_sig_v, add_monopole, add_quadrupole, output_dir, \
+            vary_sig_v, add_monopole, add_quadrupole, output_dir,\
+            czlow, czhigh, \
             data_file, coord_system, box_size, corner, N_GRID, \
             N_MCMC, N_WALKERS, N_THREADS, \
                 catalogs
