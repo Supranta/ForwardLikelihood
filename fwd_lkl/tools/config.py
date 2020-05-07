@@ -14,10 +14,10 @@ def config_fwd_lkl(configfile):
     vary_sig_v     = bool(config['flow_model']['vary_sig_v']=="True")
     add_monopole   = bool(config['flow_model']['add_monopole']=="True")
     add_quadrupole = bool(config['flow_model']['add_quadrupole']=="True")
-
+    radial_beta    = bool(config['flow_model']['radial_beta']=="True")
     try:
         czlow = float(config['redshift_select']['czlow'])
-        czhigh = float(config['redshift_select']['czlow'])
+        czhigh = float(config['redshift_select']['czhigh'])
     except:
         czlow = 0.0
         czhigh = 20000.
@@ -42,7 +42,7 @@ def config_fwd_lkl(configfile):
 
     print('Exiting config_fwd_lkl....')
     return NCAT, fit_method, \
-            vary_sig_v, add_monopole, add_quadrupole, output_dir,\
+            vary_sig_v, add_monopole, add_quadrupole, radial_beta, output_dir,\
             czlow, czhigh, \
             data_file, coord_system, box_size, corner, N_GRID, \
             N_MCMC, N_WALKERS, N_THREADS, \

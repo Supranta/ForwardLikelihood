@@ -10,7 +10,7 @@ speed_of_light = 300000
 
 def create_catalog_obj(distance_indicator, v_data_file, czlow, czhigh, \
             start_index,\
-            vary_sig_v, add_monopole, add_quadrupole,\
+            vary_sig_v, add_monopole, add_quadrupole, radial_beta,\
             v_field, delta_field, coord_system, lognormal,\
             rescale_distance=None, add_sigma_int=None):
 
@@ -19,10 +19,10 @@ def create_catalog_obj(distance_indicator, v_data_file, czlow, czhigh, \
     zCMB = np.array(df['zCMB'])
 
     cz = speed_of_light * zCMB
-    select_redshift = (cz > czlow) & (cz > czhigh)
+    select_redshift = (cz > czlow) & (cz < czhigh)
     df = df[select_redshift]
+    print("Number of objects in catalog: "+str(np.sum(select_redshift)))
     zCMB = np.array(df['zCMB'])
-
     RA = np.array(df['RA'])
     DEC = np.array(df['DEC'])
 
@@ -40,7 +40,7 @@ def create_catalog_obj(distance_indicator, v_data_file, czlow, czhigh, \
             e_r_hMpc = e_mu  * (np.log(10)/5.0) * r_hMpc
         v_data = [RA, DEC, zCMB, r_hMpc, e_r_hMpc]
         obj = simple_distance(v_data, v_field, delta_field, coord_system,\
-                                vary_sig_v, add_monopole, add_quadrupole, start_index,\
+                                vary_sig_v, add_monopole, add_quadrupole, radial_beta, start_index,\
                                 rescale_distance, add_sigma_int, lognormal)
     elif(distance_indicator == 'sn_lc_fit'):
         mB = np.array(df['mB'])
@@ -51,7 +51,7 @@ def create_catalog_obj(distance_indicator, v_data_file, czlow, czhigh, \
         e_x1 = np.array(df['e_x1'])
         v_data = [RA, DEC, zCMB, mB, c_sn, x1, e_mB, e_c, e_x1]
         obj = sn_lc_fit(v_data, v_field, delta_field, coord_system,\
-                                vary_sig_v, add_monopole, add_quadrupole, start_index, lognormal)
+                                vary_sig_v, add_monopole, add_quadrupole, radial_beta, start_index, lognormal)
     elif(distance_indicator == 'tf'):
         i = np.array(df['mag'])
         eta = np.array(df['eta'])
@@ -59,7 +59,7 @@ def create_catalog_obj(distance_indicator, v_data_file, czlow, czhigh, \
         e_eta = np.array(df['e_eta'])
         v_data = [RA, DEC, zCMB, i, eta, e_i, e_eta]
         obj = TF(v_data, v_field, delta_field, coord_system,\
-                                vary_sig_v, add_monopole, add_quadrupole, start_index, lognormal)
+                                vary_sig_v, add_monopole, add_quadrupole, radial_beta, start_index, lognormal)
     elif(distance_indicator == 'lxt'):
         T = np.array(df['T'])
         e_T = np.array(df['e_T'])
@@ -67,6 +67,6 @@ def create_catalog_obj(distance_indicator, v_data_file, czlow, czhigh, \
 
         v_data = [RA, DEC, zCMB, T, f, e_T]
         obj = LXT(v_data, v_field, delta_field, coord_system,\
-                                vary_sig_v, add_monopole, add_quadrupole, start_index, lognormal)
+                                vary_sig_v, add_monopole, add_quadrupole, radial_beta, start_index, lognormal)
     print('Exiting create_catalog_obj....')
     return obj

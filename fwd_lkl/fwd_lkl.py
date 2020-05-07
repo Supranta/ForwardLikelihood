@@ -5,7 +5,7 @@ from .tools.utils import direction_vector
 This class uses forward likelihood method on simple distance data using a Gaussian likelihood for
 P(r|data).
 """
-def num_flow_params(vary_sig_v, add_monopole, add_quadrupole):
+def num_flow_params(vary_sig_v, add_monopole, add_quadrupole, radial_beta):
     num_params = 4
     if(vary_sig_v):
         num_params += 1
@@ -13,13 +13,20 @@ def num_flow_params(vary_sig_v, add_monopole, add_quadrupole):
         num_params += 1
     if(add_quadrupole):
         num_params += 5
+    if(radial_beta):
+        num_params += 1
     return num_params
 
-def flow_params_pos0(vary_sig_v, add_monopole, add_quadrupole):
+def flow_params_pos0(vary_sig_v, add_monopole, add_quadrupole, radial_beta):
     theta_init_mean   = [1., 0., 0., 0.]
     theta_init_spread = [0.005, 5.0, 5.0, 5.0]
     labels = [r'$\beta$', r'$V_x$', r'$V_y$', r'$V_z$']
     simple_labels = ['beta', 'V_x', 'V_y', 'V_z']
+    if(radial_beta):
+        theta_init_mean.insert(0, 0.)
+        theta_init_spread.insert(0, 1.)
+        labels.insert(0,r'$\beta_1$')
+        simple_labels.insert(0,'beta_slope')
     if(vary_sig_v):
         theta_init_mean.insert(0, 100.)
         theta_init_spread.insert(0, 5.)
@@ -39,15 +46,16 @@ def flow_params_pos0(vary_sig_v, add_monopole, add_quadrupole):
     return theta_init_mean, theta_init_spread, labels, simple_labels
 
 class fwd_lkl:
-    def __init__(self, v_data, v_field, delta_field, coord_system, vary_sig_v, add_monopole, add_quadrupole, lognormal, N_POINTS=1000):
+    def __init__(self, v_data, v_field, delta_field, coord_system, vary_sig_v, add_monopole, add_quadrupole, radial_beta, lognormal, N_POINTS=1000):
         self.RA           = v_data[0]
         self.DEC          = v_data[1]
         self.z_obs        = v_data[2]
         self.vary_sig_v   = vary_sig_v
         self.add_monopole = add_monopole
         self.add_quadrupole = add_quadrupole
+        self.radial_beta  = radial_beta
         self.lognormal    = lognormal
-        self.num_flow_params = num_flow_params(vary_sig_v, add_monopole, add_quadrupole)
+        self.num_flow_params = num_flow_params(vary_sig_v, add_monopole, add_quadrupole, radial_beta)
         self.r_hat = direction_vector(self.RA, self.DEC, coord_system)
 
         V_x_field, V_y_field, V_z_field = v_field
@@ -93,6 +101,10 @@ class fwd_lkl:
             flow_params = flow_params[1:]
         else:
             sig_v = 150.
+        if(self.radial_beta):
+            beta_slope = flow_params[0]
+            flow_params = flow_params[1:]
+
         beta, V_x, V_y, V_z = flow_params
         v_bulk = np.array([V_x, V_y, V_z]).reshape((3,1))
         r, V_r, delta = self.precomputed
@@ -104,7 +116,11 @@ class fwd_lkl:
             v_bulk_quad = np.sum(self.r_hat*np.matmul(quadrupole_matrix, self.r_hat),axis=0,keepdims=True)*r
             v_bulk_r = v_bulk_r + v_bulk_quad
         N_GAL = self.r_hat.shape[1]
-        z_pred_r = ((1 + (v_bulk_r + beta*V_r)/c)*(1 + z_cos(r, cosmo_pars)) - 1.0)
+        if(self.radial_beta):
+            # print(r.shape, V_r.shape)
+            z_pred_r = ((1 + (v_bulk_r + (beta + beta_slope * (r/100.))*V_r)/c)*(1 + z_cos(r, cosmo_pars)) - 1.0)
+        else:
+            z_pred_r = ((1 + (v_bulk_r + beta*V_r)/c)*(1 + z_cos(r, cosmo_pars)) - 1.0)
         delta_z_sig_v = c*(z_pred_r - self.z_obs)/(sig_v)
 
         catalog_params = params[self.start_index:self.end_index]
