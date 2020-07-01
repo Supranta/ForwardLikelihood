@@ -1,7 +1,6 @@
 from ..simple_distance import simple_distance
 from ..sn_lc_fit import sn_lc_fit
 from ..tf import TF
-from ..fp import FP
 import numpy as np
 import pandas as pd
 from .cosmological_funcs import r_from_mu

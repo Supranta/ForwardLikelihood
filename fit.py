@@ -8,7 +8,7 @@ from fwd_lkl.tools.fitting import uncertainty, sample, write_catalog_parameters
 
 configfile = sys.argv[1]
 
-cosmo_pars = [0.3, 0.7]
+cosmo_pars = [0.315, 0.685]
 
 def fwd_lnprob(theta, catalog_objs):
         lnprob = 0
