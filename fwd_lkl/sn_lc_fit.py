@@ -47,7 +47,8 @@ class sn_lc_fit(fwd_lkl):
         mu = self.mB - M + alpha * self.x1 - beta_sn * self.c_sn
         d = r_from_mu(mu)
 
-        e_mu = np.sqrt(self.e_mB**2 + sigma_int**2)
+        e_mu = np.sqrt(self.e_mB**2 + sigma_int**2 \
+        		+ (alpha*self.e_x1)**2 + (beta_sn*self.e_c)**2)
         sigma_d = e_mu  * (np.log(10)/5.0) * d
 
         return d, sigma_d, e_mu
