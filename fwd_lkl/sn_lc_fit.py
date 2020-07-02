@@ -7,7 +7,7 @@ from fwd_lkl.fwd_lkl import fwd_lkl
 from .tools.cosmological_funcs import r_from_mu
 
 class sn_lc_fit(fwd_lkl):
-    def __init__(self, v_data, v_field, delta_field, coord_system, vary_sig_v, start_index, lognormal, N_POINTS=500):
+    def __init__(self, v_data, v_field, delta_field, coord_system, vary_sig_v, start_index, lognormal, fix_sigma_int, N_POINTS=500):
         super().__init__(v_data, v_field, delta_field, coord_system, vary_sig_v, lognormal)
         self.mB = v_data[3]
         self.c_sn = v_data[4]
@@ -15,22 +15,34 @@ class sn_lc_fit(fwd_lkl):
         self.e_mB = v_data[6]
         self.e_c = v_data[7]
         self.e_x1 = v_data[8]
+        self.fix_sigma_int = fix_sigma_int
         self.start_index = start_index
         self.end_index = start_index + self.num_params()
 
     def num_params(self):
-        N_PARAMS = 4        # M, alpha, beta_sn, sigma_int
+        if(self.fix_sigma_int is not None):
+            N_PARAMS = 3       # M, alpha, beta_sn
+        else:
+            N_PARAMS = 4        # M, alpha, beta_sn, sigma_int
         return N_PARAMS
 
     def pos0(self):
         theta_init_mean = []
         theta_init_spread = []
-        theta_init_mean = theta_init_mean+[-18.0, 0.162, 3.126, 0.1]
-        theta_init_spread = theta_init_spread + [0.01, 0.001, 0.01, 0.005]
+        if(self.fix_sigma_int is not None):
+            theta_init_mean = theta_init_mean+[-18.0, 0.162, 3.126]
+            theta_init_spread = theta_init_spread + [0.01, 0.001, 0.01]
+        else:
+            theta_init_mean = theta_init_mean+[-18.0, 0.162, 3.126, 0.1]
+            theta_init_spread = theta_init_spread + [0.01, 0.001, 0.01, 0.005]
         return theta_init_mean, theta_init_spread
 
     def d_sigmad(self, catalog_theta):
-        M, alpha, beta_sn, sigma_int = catalog_theta
+        if(self.fix_sigma_int is not None):
+            M, alpha, beta_sn = catalog_theta
+            sigma_int = self.fix_sigma_int
+        else:
+            M, alpha, beta_sn, sigma_int = catalog_theta
 
         mu = self.mB - M + alpha * self.x1 - beta_sn * self.c_sn
         d = r_from_mu(mu)
@@ -41,7 +53,8 @@ class sn_lc_fit(fwd_lkl):
         return d, sigma_d, e_mu
 
     def catalog_lnprior(self, catalog_params):
-        M, alpha, beta_sn, sigma_int = catalog_params
+        if(self.fix_sigma_int is None):
+            M, alpha, beta_sn, sigma_int = catalog_params
         if(sigma_int < 0.0):
             return -np.inf
         return 0.0

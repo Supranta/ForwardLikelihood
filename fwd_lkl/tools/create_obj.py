@@ -9,7 +9,7 @@ def create_catalog_obj(distance_indicator, v_data_file, \
             start_index,\
             vary_sig_v,\
             v_field, delta_field, coord_system, lognormal,\
-            rescale_distance=None, add_sigma_int=None):
+            rescale_distance=None, add_sigma_int=None, fix_sigma_int=None):
 
     print('Entering create_catalog_obj....')
     df = pd.read_csv(v_data_file)
@@ -41,7 +41,7 @@ def create_catalog_obj(distance_indicator, v_data_file, \
         e_x1 = np.array(df['e_x1'])
         v_data = [RA, DEC, zCMB, mB, c_sn, x1, e_mB, e_c, e_x1]
         obj = sn_lc_fit(v_data, v_field, delta_field, coord_system,\
-                                vary_sig_v, start_index, lognormal)
+                                vary_sig_v, start_index, lognormal, fix_sigma_int)
     elif(distance_indicator == 'tf'):
         i = np.array(df['mag'])
         eta = np.array(df['eta'])
