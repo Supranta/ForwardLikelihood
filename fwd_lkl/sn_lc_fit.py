@@ -55,6 +55,6 @@ class sn_lc_fit(fwd_lkl):
     def catalog_lnprior(self, catalog_params):
         if(self.fix_sigma_int is None):
             M, alpha, beta_sn, sigma_int = catalog_params
-        if(sigma_int < 0.0):
-            return -np.inf
+            if(sigma_int < 0.0):
+                return -np.inf
         return 0.0
