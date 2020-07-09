@@ -13,9 +13,9 @@ class simple_distance(fwd_lkl):
         self.e_V = self.e_rhMpc*100
         self.rescale_distance = rescale_distance
         self.add_sigma_int = add_sigma_int
+        self.fix_sigma_int = fix_sigma_int
         self.start_index = start_index
         self.end_index = start_index + self.num_params()
-        self.fix_sigma_int = fix_sigma_int
 
     def num_params(self):
         N_PARAMS = 0
