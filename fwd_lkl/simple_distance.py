@@ -6,7 +6,7 @@ import numpy as np
 from fwd_lkl.fwd_lkl import fwd_lkl
 
 class simple_distance(fwd_lkl):
-    def __init__(self, v_data, v_field, delta_field, coord_system, vary_sig_v, start_index, rescale_distance, add_sigma_int, lognormal, N_POINTS=500):
+    def __init__(self, v_data, v_field, delta_field, coord_system, vary_sig_v, start_index, rescale_distance, add_sigma_int, lognormal, fix_sigma_int, N_POINTS=500):
         super().__init__(v_data, v_field, delta_field, coord_system, vary_sig_v, lognormal)
         self.rhMpc = v_data[3]
         self.e_rhMpc = v_data[4]
@@ -15,12 +15,13 @@ class simple_distance(fwd_lkl):
         self.add_sigma_int = add_sigma_int
         self.start_index = start_index
         self.end_index = start_index + self.num_params()
+        self.fix_sigma_int = fix_sigma_int
 
     def num_params(self):
         N_PARAMS = 0
         if(self.rescale_distance):
             N_PARAMS += 1
-        if(self.add_sigma_int):
+        if(self.add_sigma_int and self.fix_sigma_int is None):
             N_PARAMS += 1
         return N_PARAMS
 
@@ -30,7 +31,7 @@ class simple_distance(fwd_lkl):
         if(self.rescale_distance):
             theta_init_mean.append(1.0)
             theta_init_spread.append(0.005)
-        if(self.add_sigma_int):
+        if(self.add_sigma_int and self.fix_sigma_int is None):
             theta_init_mean.append(0.1)
             theta_init_spread.append(0.005)
         return theta_init_mean, theta_init_spread
@@ -40,8 +41,11 @@ class simple_distance(fwd_lkl):
             d = catalog_theta[0] * self.rhMpc
         else:
             d = self.rhMpc
-        if(self.add_sigma_int):
-            sigma_int = catalog_theta[-1]
+        if(self.add_sigma_int or self.fix_sigma_int is not None):
+            if self.fix_sigma_int is not None:
+                sigma_int = self.fix_sigma_int
+            else:
+                sigma_int = catalog_theta[-1]
             sigma_int_d = sigma_int * np.log(10)/5.0 * self.rhMpc
             sigma_d = np.sqrt(self.e_rhMpc**2 + sigma_int_d**2)
         else:

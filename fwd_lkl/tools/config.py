@@ -48,7 +48,12 @@ def catalog_parser(config, i):
     fix_sigma_int = None
     if(v_data_type=='simple_distance'):
         rescale_distance = bool(config[catalog_str]['rescale_distance'] == 'True')
-        add_sigma_int = bool(config[catalog_str]['add_sigma_int'] == 'True')
+        try:
+            fix_sigma_int = float(config[catalog_str]['fix_sigma_int'])
+        except:
+            print("sigma_int not fixed!")
+            fix_sigma_int = None
+            add_sigma_int = bool(config[catalog_str]['add_sigma_int'] == 'True')
     if(v_data_type=='sn_lc_fit'):
         try:
             fix_sigma_int = float(config[catalog_str]['fix_sigma_int'])

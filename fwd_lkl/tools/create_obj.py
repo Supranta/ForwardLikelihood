@@ -31,7 +31,7 @@ def create_catalog_obj(distance_indicator, v_data_file, \
         v_data = [RA, DEC, zCMB, r_hMpc, e_r_hMpc]
         obj = simple_distance(v_data, v_field, delta_field, coord_system,\
                                 vary_sig_v, start_index,\
-                                rescale_distance, add_sigma_int, lognormal)
+                                rescale_distance, add_sigma_int, lognormal, fix_sigma_int)
     elif(distance_indicator == 'sn_lc_fit'):
         mB = np.array(df['mB'])
         c_sn = np.array(df['c'])
