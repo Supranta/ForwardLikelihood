@@ -1,17 +1,18 @@
 #!/bin/bash
 set -e
 
-python raw_test/raw_test.py -n 300 -s 100 --seed 12345
+# python raw_test/raw_test.py -n 300 -s 100 --seed 12345 -d raw_test/out
+# echo "Test sets generated"
 
-for filename in raw_test/out/*.csv
-do
-    name=$(echo "$filename" | rev | cut -d'/' -f1 | rev) # get the stem
-    echo -e "\nProcessing $filename..."
-    sed -e "s|<file>|$filename|g" raw_test.ini > tmp.ini
-    python fit.py tmp.ini
-    mv ./output/raw_test/results.txt ./output/raw_test/"$name".txt
-    rm tmp.ini
-done
+# for filename in raw_test/out/*.csv
+# do
+#     name=$(echo "$filename" | rev | cut -d'/' -f1 | rev) # get the stem
+#     echo -e "\nProcessing $filename..."
+#     sed -e "s|<file>|$filename|g" raw_test.ini > tmp.ini
+#     python fit.py tmp.ini
+#     mv ./output/raw_test/results.txt ./output/raw_test/"$name".txt
+#     rm tmp.ini
+# done
 
 sum=0
 sum2=0

@@ -13,7 +13,7 @@ args = parser.parse_args()
 if not os.path.isdir(args.outdir):
     os.mkdir(args.outdir)
 
-halos = pd.read_csv('corrected_halo_catalog.csv', index_col=0)
+halos = pd.read_csv('../halo_sim/data/corrected_halo_catalog.csv', index_col=0)
 bg = np.random.PCG64(args.seed)
 
 for i in range(args.samples):
