@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-python raw_test/raw_test.py -n 300 -s 100 --seed 12345
+python raw_test/raw_test.py -c data/halo_mock_velmass.csv -n 300 -s 100 --seed 12345 -d raw_test/out
 
 for filename in raw_test/out/*.csv
 do
