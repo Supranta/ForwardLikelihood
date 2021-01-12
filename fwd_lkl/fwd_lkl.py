@@ -46,7 +46,9 @@ def flow_params_pos0(vary_sig_v, add_monopole, add_quadrupole, radial_beta):
     return theta_init_mean, theta_init_spread, labels, simple_labels
 
 class fwd_lkl:
-    def __init__(self, v_data, v_field, delta_field, coord_system, vary_sig_v, add_monopole, add_quadrupole, radial_beta, lognormal, N_POINTS=1000):
+    def __init__(self, v_data, v_field, delta_field, coord_system,
+                        vary_sig_v, add_monopole, add_quadrupole, radial_beta,
+                        lognormal, N_POINTS=500):
         self.RA           = v_data[0]
         self.DEC          = v_data[1]
         self.z_obs        = v_data[2]
@@ -59,7 +61,7 @@ class fwd_lkl:
         self.r_hat = direction_vector(self.RA, self.DEC, coord_system)
 
         V_x_field, V_y_field, V_z_field = v_field
-        r = np.linspace(0.01, 200, N_POINTS).reshape(N_POINTS, 1)
+        r = np.linspace(0.01, 249., N_POINTS).reshape(N_POINTS, 1)
         cartesian_pos_r = (np.expand_dims(self.r_hat.T, axis=1)*np.tile(np.expand_dims(r, axis=0),(1,1,3)))
 
         V_r = (V_x_field(cartesian_pos_r)*np.expand_dims(self.r_hat[0], 1)

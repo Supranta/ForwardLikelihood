@@ -20,7 +20,7 @@ def config_fwd_lkl(configfile):
         czhigh = float(config['redshift_select']['czhigh'])
     except:
         czlow = 0.0
-        czhigh = 20000.
+        czhigh = 25000.
 
     output_dir = config['io']['output_dir']
 
