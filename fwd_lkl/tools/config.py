@@ -1,4 +1,14 @@
 import configparser
+import numpy as np
+
+def config_fixed_V_ext(configfile):
+    print('Entering config_fwd_lkl....')
+    config = configparser.ConfigParser()
+    config.read(configfile)
+
+    V_ext_fixed      = np.array(config['flow_model']['V_ext_fixed'].split(',')).astype(float)
+
+    return V_ext_fixed
 
 def config_fwd_lkl(configfile):
     """
@@ -11,10 +21,11 @@ def config_fwd_lkl(configfile):
     NCAT = int(config['default']['NCAT'])
     fit_method = config['default']['fit_method']
 
+    fix_V_ext      = bool(config['flow_model']['fix_V_ext']=="True")
     vary_sig_v     = bool(config['flow_model']['vary_sig_v']=="True")
-    add_monopole   = bool(config['flow_model']['add_monopole']=="True")
     add_quadrupole = bool(config['flow_model']['add_quadrupole']=="True")
     radial_beta    = bool(config['flow_model']['radial_beta']=="True")
+
     try:
         czlow = float(config['redshift_select']['czlow'])
         czhigh = float(config['redshift_select']['czhigh'])
@@ -42,8 +53,8 @@ def config_fwd_lkl(configfile):
 
     print('Exiting config_fwd_lkl....')
     return NCAT, fit_method, \
-            vary_sig_v, add_monopole, add_quadrupole, radial_beta, output_dir,\
-            czlow, czhigh, \
+            fix_V_ext, vary_sig_v, add_quadrupole, radial_beta, \
+            output_dir, czlow, czhigh, \
             data_file, coord_system, box_size, corner, N_GRID, \
             N_MCMC, N_WALKERS, N_THREADS, \
                 catalogs

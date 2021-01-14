@@ -5,11 +5,11 @@ from .tools.utils import direction_vector
 This class uses forward likelihood method on simple distance data using a Gaussian likelihood for
 P(r|data).
 """
-def num_flow_params(vary_sig_v, add_monopole, add_quadrupole, radial_beta):
+def num_flow_params(fix_V_ext, vary_sig_v, add_quadrupole, radial_beta):
     num_params = 4
+    if(fix_V_ext):
+        num_params = 1
     if(vary_sig_v):
-        num_params += 1
-    if(add_monopole):
         num_params += 1
     if(add_quadrupole):
         num_params += 5
@@ -17,11 +17,16 @@ def num_flow_params(vary_sig_v, add_monopole, add_quadrupole, radial_beta):
         num_params += 1
     return num_params
 
-def flow_params_pos0(vary_sig_v, add_monopole, add_quadrupole, radial_beta):
+def flow_params_pos0(fix_V_ext, vary_sig_v, add_quadrupole, radial_beta):
     theta_init_mean   = [1., 0., 0., 0.]
     theta_init_spread = [0.005, 5.0, 5.0, 5.0]
     labels = [r'$\beta$', r'$V_x$', r'$V_y$', r'$V_z$']
     simple_labels = ['beta', 'V_x', 'V_y', 'V_z']
+    if(fix_V_ext):
+        theta_init_mean   = [1.]
+        theta_init_spread = [0.005]
+        labels = [r'$\beta$']
+        simple_labels = ['beta']
     if(radial_beta):
         theta_init_mean.insert(0, 0.)
         theta_init_spread.insert(0, 1.)
@@ -32,11 +37,6 @@ def flow_params_pos0(vary_sig_v, add_monopole, add_quadrupole, radial_beta):
         theta_init_spread.insert(0, 5.)
         labels.insert(0,r'$\sigma_v$')
         simple_labels.insert(0,'sigma_v')
-    if(add_monopole):
-        theta_init_mean.insert(-1, 0.)
-        theta_init_spread.insert(-1, 5.)
-        labels.insert(-1,r'$V_{mono}$')
-        simple_labels.insert(-1,'V_mono')
     if(add_quadrupole):
         for n in range(5):
             theta_init_mean.insert(-1, 0.)
@@ -47,21 +47,21 @@ def flow_params_pos0(vary_sig_v, add_monopole, add_quadrupole, radial_beta):
 
 class fwd_lkl:
     def __init__(self, v_data, v_field, delta_field, coord_system,
-                        vary_sig_v, add_monopole, add_quadrupole, radial_beta,
+                        fix_V_ext, vary_sig_v, add_quadrupole, radial_beta,
                         lognormal, N_POINTS=500):
         self.RA           = v_data[0]
         self.DEC          = v_data[1]
         self.z_obs        = v_data[2]
         self.vary_sig_v   = vary_sig_v
-        self.add_monopole = add_monopole
+        self.fix_V_ext    = fix_V_ext
         self.add_quadrupole = add_quadrupole
         self.radial_beta  = radial_beta
         self.lognormal    = lognormal
-        self.num_flow_params = num_flow_params(vary_sig_v, add_monopole, add_quadrupole, radial_beta)
+        self.num_flow_params = num_flow_params(fix_V_ext, vary_sig_v, add_quadrupole, radial_beta)
         self.r_hat = direction_vector(self.RA, self.DEC, coord_system)
 
         V_x_field, V_y_field, V_z_field = v_field
-        r = np.linspace(0.01, 249., N_POINTS).reshape(N_POINTS, 1)
+        r = np.linspace(0.01, 199.9, N_POINTS).reshape(N_POINTS, 1)
         cartesian_pos_r = (np.expand_dims(self.r_hat.T, axis=1)*np.tile(np.expand_dims(r, axis=0),(1,1,3)))
 
         V_r = (V_x_field(cartesian_pos_r)*np.expand_dims(self.r_hat[0], 1)
@@ -72,6 +72,10 @@ class fwd_lkl:
 
         self.precomputed = [r, V_r, delta]
 
+    def set_fixed_V_ext(self, V_ext_fixed):
+        self.Vx_fixed = V_ext_fixed[0]
+        self.Vy_fixed = V_ext_fixed[1]
+        self.Vz_fixed = V_ext_fixed[2]
 
     def p_r(self, catalog_theta):
         d, sigma_d, e_mu = self.d_sigmad(catalog_theta)
@@ -95,9 +99,6 @@ class fwd_lkl:
             U_zz = -(U_xx + U_yy)
             quadrupole_matrix = np.array([[U_xx, U_xy, U_xz],[U_xy, U_yy, U_yz],[U_xz, U_yz, U_zz]])
             flow_params = flow_params[:-5]
-        if(self.add_monopole):
-            V_mono = flow_params[-1]
-            flow_params = flow_params[:-1]
         if(self.vary_sig_v):
             sig_v = flow_params[0]
             flow_params = flow_params[1:]
@@ -107,13 +108,18 @@ class fwd_lkl:
             beta_slope = flow_params[0]
             flow_params = flow_params[1:]
 
-        beta, V_x, V_y, V_z = flow_params
+        if(self.fix_V_ext):
+            beta = flow_params
+            V_x  = self.Vx_fixed
+            V_y  = self.Vy_fixed
+            V_z  = self.Vz_fixed
+        else:
+            beta, V_x, V_y, V_z = flow_params
+
         v_bulk = np.array([V_x, V_y, V_z]).reshape((3,1))
         r, V_r, delta = self.precomputed
 
         v_bulk_r = np.sum((v_bulk * self.r_hat), axis=0, keepdims=True)
-        if(self.add_monopole):
-            v_bulk_r += V_mono
         if(self.add_quadrupole):
             v_bulk_quad = np.sum(self.r_hat*np.matmul(quadrupole_matrix, self.r_hat),axis=0,keepdims=True)*r
             v_bulk_r = v_bulk_r + v_bulk_quad
