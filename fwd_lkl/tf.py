@@ -9,10 +9,10 @@ from .tools.cosmological_funcs import r_from_mu
 class TF(fwd_lkl):
     def __init__(self, v_data, v_field, delta_field, coord_system,
                     fix_V_ext, vary_sig_v, add_quadrupole, radial_beta,
-                    start_index, lognormal, N_POINTS=500):
+                    start_index, lognormal, dist_cov, N_POINTS=500):
         super().__init__(v_data, v_field, delta_field, coord_system,
-                            fix_V_ext, vary_sig_v, add_quadrupole, radial_beta, 
-                            lognormal)
+                            fix_V_ext, vary_sig_v, add_quadrupole, radial_beta,
+                            lognormal, dist_cov)
         self.mag = v_data[3]
         self.eta = v_data[4]
         self.e_mag = v_data[5]

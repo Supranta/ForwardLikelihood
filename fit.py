@@ -8,7 +8,7 @@ from fwd_lkl.tools.fitting import uncertainty, sample, write_catalog_parameters
 
 configfile = sys.argv[1]
 
-cosmo_pars = [0.3, 0.7]
+cosmo_pars = [0.315, 0.685]
 
 def fwd_lnprob(theta, catalog_objs):
         lnprob = 0
@@ -46,9 +46,9 @@ theta_init_mean, theta_init_spread, flow_model_labels, simple_labels = flow_para
 catalog_objs = []
 
 for i, catalog in enumerate(catalogs):
-        v_data_type, rescale_distance, add_sigma_int, v_data_file, lognormal = catalog
+        v_data_type, rescale_distance, add_sigma_int, v_data_file, lognormal, dist_cov = catalog
         obj = create_catalog_obj(v_data_type, v_data_file, czlow, czhigh,\
-            N, fix_V_ext, vary_sig_v, add_quadrupole, radial_beta, v_field, delta_field, coord_system, lognormal, rescale_distance, add_sigma_int)
+            N, fix_V_ext, vary_sig_v, add_quadrupole, radial_beta, v_field, delta_field, coord_system, lognormal, rescale_distance, add_sigma_int, dist_cov)
         if(fix_V_ext):
                 obj.set_fixed_V_ext(V_ext_fixed)
         catalog_objs.append(obj)

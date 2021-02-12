@@ -48,7 +48,7 @@ def flow_params_pos0(fix_V_ext, vary_sig_v, add_quadrupole, radial_beta):
 class fwd_lkl:
     def __init__(self, v_data, v_field, delta_field, coord_system,
                         fix_V_ext, vary_sig_v, add_quadrupole, radial_beta,
-                        lognormal, N_POINTS=500):
+                        lognormal, dist_cov, N_POINTS=500):
         self.RA           = v_data[0]
         self.DEC          = v_data[1]
         self.z_obs        = v_data[2]
@@ -57,6 +57,7 @@ class fwd_lkl:
         self.add_quadrupole = add_quadrupole
         self.radial_beta  = radial_beta
         self.lognormal    = lognormal
+        self.dist_cov     = dist_cov
         self.num_flow_params = num_flow_params(fix_V_ext, vary_sig_v, add_quadrupole, radial_beta)
         self.r_hat = direction_vector(self.RA, self.DEC, coord_system)
 
@@ -79,6 +80,9 @@ class fwd_lkl:
 
     def p_r(self, catalog_theta):
         d, sigma_d, e_mu = self.d_sigmad(catalog_theta)
+        if self.dist_cov is not None:
+            d_offset = np.random.multivariate_normal(mean=np.zeros(len(d)), cov=self.dist_cov)
+        d = d+d_offset
         r, V_r, delta = self.precomputed
 
         cartesian_pos_r = (np.expand_dims(self.r_hat.T, axis=1)*np.tile(np.expand_dims(r, axis=0),(1,1,3)))

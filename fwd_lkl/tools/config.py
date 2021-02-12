@@ -65,12 +65,17 @@ def catalog_parser(config, i):
     data_file = config[catalog_str]['data_file']
     assert v_data_type == 'simple_distance' or v_data_type == 'sn_lc_fit' or v_data_type == 'tf' or v_data_type == 'fp' or v_data_type == 'lxt'
     rescale_distance = None
-    add_sigma_int = None
+    add_sigma_int    = None
     if(v_data_type=='simple_distance'):
         rescale_distance = bool(config[catalog_str]['rescale_distance'] == 'True')
         add_sigma_int = bool(config[catalog_str]['add_sigma_int'] == 'True')
+    try:
+        dist_cov_path = config[catalog_str]['dist_cov']
+        dist_cov = np.load(dist_cov_path)
+    except:
+        dist_cov = None
     lognormal = bool(config[catalog_str]['lognormal'] == "True")
-    return [v_data_type, rescale_distance, add_sigma_int, data_file, lognormal]
+    return [v_data_type, rescale_distance, add_sigma_int, data_file, lognormal, dist_cov]
 
 def analyze_fwd_lkl(configfile):
     """
