@@ -6,9 +6,9 @@ def process_reconstruction_data(data_file, box_size, corner, N_grid):
     print('Entering reconstruction data interpolation....')
     l = box_size/N_grid
 
-    X = np.linspace(corner, corner+box_size, N_grid)
-    Y = np.linspace(corner, corner+box_size, N_grid)
-    Z = np.linspace(corner, corner+box_size, N_grid)
+    X = np.linspace(corner+0.5*l, corner+box_size-0.5*l, N_grid)
+    Y = np.linspace(corner+0.5*l, corner+box_size-0.5*l, N_grid)
+    Z = np.linspace(corner+0.5*l, corner+box_size-0.5*l, N_grid)
 
     f = h5.File(data_file,'r')
 

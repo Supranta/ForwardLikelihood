@@ -61,7 +61,7 @@ class fwd_lkl:
         self.r_hat = direction_vector(self.RA, self.DEC, coord_system)
 
         V_x_field, V_y_field, V_z_field = v_field
-        r = np.linspace(0.01, 199.9, N_POINTS).reshape(N_POINTS, 1)
+        r = np.linspace(0.01, 198., N_POINTS).reshape(N_POINTS, 1)
         cartesian_pos_r = (np.expand_dims(self.r_hat.T, axis=1)*np.tile(np.expand_dims(r, axis=0),(1,1,3)))
 
         V_r = (V_x_field(cartesian_pos_r)*np.expand_dims(self.r_hat[0], 1)
