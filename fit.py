@@ -1,5 +1,8 @@
 import numpy as np
 import os, sys, time
+
+os.environ["OMP_NUM_THREADS"] = "1"
+
 from fwd_lkl.fwd_lkl import fwd_lkl, num_flow_params, flow_params_pos0
 from fwd_lkl.tools.config import config_fwd_lkl, config_fixed_V_ext
 from fwd_lkl.tools.create_obj import create_catalog_obj
@@ -18,7 +21,7 @@ def fwd_lnprob(theta, catalog_objs):
                 if(sig_v < 0.0):
                         return -np.inf
         for catalog_obj in catalog_objs:
-                lnprob += catalog_obj.catalog_lnprob(theta, cosmo_pars)
+            lnprob = catalog_obj.catalog_lnprob(theta, cosmo_pars)
         return lnprob
 
 def fwd_objective(theta, catalog_objs):
@@ -61,10 +64,9 @@ if(fit_method=='mcmc'):
         import emcee
 
         print('Sampling parameters.....')
-        pos0 = [theta_init_mean + theta_init_spread*np.random.randn(N) for i in range(N_WALKERS)]
+        pos0 = [theta_init_mean + theta_init_spread*np.random.randn(N) for i in range(N_WALKERS)] 
         sampler = emcee.EnsembleSampler(N_WALKERS, N, fwd_lnprob, args=(catalog_objs,), threads=N_THREADS)
-
-        sample(sampler, pos0, N_MCMC, output_dir)
+        sample(sampler, pos0, N_MCMC, output_dir, catalog_objs)
 
 elif(fit_method=='optimize'):
         print('Finding optimal parameters.....')
