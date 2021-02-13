@@ -3,6 +3,8 @@ import os, sys, time
 
 os.environ["OMP_NUM_THREADS"] = "1"
 
+from multiprocessing import Pool
+
 from fwd_lkl.fwd_lkl import fwd_lkl, num_flow_params, flow_params_pos0
 from fwd_lkl.tools.config import config_fwd_lkl, config_fixed_V_ext
 from fwd_lkl.tools.create_obj import create_catalog_obj
@@ -31,7 +33,7 @@ NCAT, fit_method,\
         fix_V_ext, vary_sig_v, add_quadrupole, radial_beta,\
         output_dir, czlow, czhigh,\
         data_file, coord_system, box_size, corner, N_grid,\
-        N_MCMC, N_WALKERS, N_THREADS, \
+        N_MCMC, N_WALKERS,\
             catalogs = config_fwd_lkl(configfile)
 
 if(fix_V_ext):
@@ -62,11 +64,11 @@ for i, catalog in enumerate(catalogs):
 
 if(fit_method=='mcmc'):
         import emcee
-
         print('Sampling parameters.....')
         pos0 = [theta_init_mean + theta_init_spread*np.random.randn(N) for i in range(N_WALKERS)] 
-        sampler = emcee.EnsembleSampler(N_WALKERS, N, fwd_lnprob, args=(catalog_objs,), threads=N_THREADS)
-        sample(sampler, pos0, N_MCMC, output_dir, catalog_objs)
+        with Pool() as pool:
+            sampler = emcee.EnsembleSampler(N_WALKERS, N, fwd_lnprob, args=(catalog_objs,), pool=pool)
+            sample(sampler, pos0, N_MCMC, output_dir, catalog_objs)
 
 elif(fit_method=='optimize'):
         print('Finding optimal parameters.....')
