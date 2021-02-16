@@ -43,6 +43,10 @@ def config_fwd_lkl(configfile):
 
     N_MCMC = int(config['MCMC']['N_MCMC'])
     N_WALKERS = int(config['MCMC']['N_WALKERS'])
+    try:
+        sampler_type = config['MCMC']['sampler_type']
+    except:
+        sampler_type = 'emcee'
 
     catalogs = []
 
@@ -55,7 +59,7 @@ def config_fwd_lkl(configfile):
             fix_V_ext, vary_sig_v, add_quadrupole, radial_beta, \
             output_dir, czlow, czhigh, \
             data_file, coord_system, box_size, corner, N_GRID, \
-            N_MCMC, N_WALKERS, catalogs
+            N_MCMC, N_WALKERS, sampler_type, catalogs
 
 def catalog_parser(config, i):
     catalog_str = 'catalog_'+str(i)

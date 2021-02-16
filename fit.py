@@ -10,6 +10,7 @@ from fwd_lkl.tools.config import config_fwd_lkl, config_fixed_V_ext
 from fwd_lkl.tools.create_obj import create_catalog_obj
 from fwd_lkl.tools.data import process_reconstruction_data
 from fwd_lkl.tools.fitting import uncertainty, sample, write_catalog_parameters
+from fwd_lkl.sampler import MHSampler
 
 configfile = sys.argv[1]
 
@@ -33,7 +34,7 @@ NCAT, fit_method,\
         fix_V_ext, vary_sig_v, add_quadrupole, radial_beta,\
         output_dir, czlow, czhigh,\
         data_file, coord_system, box_size, corner, N_grid,\
-        N_MCMC, N_WALKERS,\
+        N_MCMC, N_WALKERS, sampler_type,\
             catalogs = config_fwd_lkl(configfile)
 
 if(fix_V_ext):
@@ -63,13 +64,32 @@ for i, catalog in enumerate(catalogs):
         theta_init_spread += cat_init_spread
 
 if(fit_method=='mcmc'):
+    print('Sampling parameters.....')
+    if(sampler_type=='emcee'):
         import emcee
-        print('Sampling parameters.....')
+        print('Using emcee sampler.....')
         pos0 = [theta_init_mean + theta_init_spread*np.random.randn(N) for i in range(N_WALKERS)] 
         with Pool() as pool:
             sampler = emcee.EnsembleSampler(N_WALKERS, N, fwd_lnprob, args=(catalog_objs,), pool=pool)
             sample(sampler, pos0, N_MCMC, output_dir, catalog_objs)
-
+    if(sampler_type=='mh'):
+        print("Using MH sampler...")
+        theta = theta_init_mean
+        sampler = MHSampler(fwd_lnprob, lnprob_args=(catalog_objs,))
+        theta_list = []
+        cov = np.diag(np.array([0.04, 20., 20., 20.])**2)
+        accepted = 0
+        for ii in range(N_MCMC):
+            theta, acc, lnprob0 = sampler.sample_one_step(theta, cov)
+            theta_list.append(theta)
+            if(acc):
+                accepted += 1
+            if(ii%10==0):
+                print("MCMC iteration: %d"%(ii))
+                print("theta: "+str(theta))
+                print("Acceptance rate: %2.3f"%(accepted/(ii+1)))
+                np.save(output_dir+'/mh_chain.npy',np.array(theta_list))
+            
 elif(fit_method=='optimize'):
         print('Finding optimal parameters.....')
 
