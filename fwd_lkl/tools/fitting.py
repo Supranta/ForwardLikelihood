@@ -13,13 +13,6 @@ def sample(sampler, pos0, N_MCMC, output_dir, catalog_objs):
         i = 0
         start_time = time.time()
         for result in sampler.sample(pos0, iterations=N_MCMC):
-            for catalog_obj in catalog_objs:
-                if(catalog_obj.dist_cov is not None):
-                    N_OBJ = catalog_obj.dist_cov.shape[0]
-                    offset = np.random.multivariate_normal(mean=np.zeros(N_OBJ),cov=catalog_obj.dist_cov)
-                    catalog_obj.offset = offset
-                ln_p, _ = sampler.compute_log_prob(result.coords)
-                result.log_prob = ln_p
             end_time = time.time()
             print("Current Iteration: "+str(i)+", Time Taken: %2.2f \n"%(end_time - start_time))
             i += 1

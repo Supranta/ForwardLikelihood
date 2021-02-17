@@ -58,7 +58,6 @@ class fwd_lkl:
         self.radial_beta  = radial_beta
         self.lognormal    = lognormal
         self.dist_cov     = dist_cov
-        self.offset       = 0.
         self.num_flow_params = num_flow_params(fix_V_ext, vary_sig_v, add_quadrupole, radial_beta)
         self.r_hat = direction_vector(self.RA, self.DEC, coord_system)
 
@@ -81,8 +80,6 @@ class fwd_lkl:
 
     def p_r(self, catalog_theta):
         d, sigma_d, e_mu = self.d_sigmad(catalog_theta)
-        
-        d = d * 10**(self.offset/5.)
         
         r, V_r, delta = self.precomputed
 
