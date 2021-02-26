@@ -1,4 +1,5 @@
 import numpy as np
+import jax.numpy as jnp
 from .utils import to_cartesian, v_field
 
 #Define Constants
@@ -8,7 +9,7 @@ c = speed_of_light
 def z_cos(r_hMpc, cosmo_pars):
     Omega_m, Omega_L = cosmo_pars
     q0 = Omega_m/2.0 - Omega_L
-    return (1.0 - np.sqrt(1 - 2*r_hMpc*100*(1 + q0)/speed_of_light))/(1.0 + q0)
+    return (1.0 - jnp.sqrt(1 - 2*r_hMpc*100*(1 + q0)/speed_of_light))/(1.0 + q0)
 
 def z_pred(r, r_hat, cosmo_pars, interpolating_funcs, V_ext, beta):
     cartesian_pos = r.reshape(len(r), 1) * r_hat

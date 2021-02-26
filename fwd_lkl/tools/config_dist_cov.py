@@ -19,8 +19,11 @@ def config_PV_data(configfile):
     config = configparser.ConfigParser()
     config.read(configfile)
 
-    dist_cov_path = config['PV_DATA']['dist_cov']
-    dist_cov = np.load(dist_cov_path)
+    try:
+        dist_cov_path = config['PV_DATA']['dist_cov']
+        dist_cov = np.load(dist_cov_path)
+    except:
+        dist_cov = None
 
     PV_datafile = config['PV_DATA']['datafile']
 
