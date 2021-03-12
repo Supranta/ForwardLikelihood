@@ -46,7 +46,7 @@ def flow_params_pos0(fix_V_ext, vary_sig_v, add_quadrupole, radial_beta):
     return theta_init_mean, theta_init_spread, labels, simple_labels
 
 class fwd_lkl:
-    def __init__(self, v_data, v_field, delta_field, coord_system,
+    def __init__(self, v_data, v_field, delta_field, sigma_v_field, coord_system,
                         fix_V_ext, vary_sig_v, add_quadrupole, radial_beta,
                         lognormal, N_POINTS=500):
         self.RA           = v_data[0]
@@ -68,8 +68,12 @@ class fwd_lkl:
         + V_y_field(cartesian_pos_r)*np.expand_dims(self.r_hat[1], 1)
         + V_z_field(cartesian_pos_r)*np.expand_dims(self.r_hat[2], 1)).T
 
+        if sigma_v_field is not None:
+            self.sig_v_arr = sigma_v_field(cartesian_pos_r).T
+        else:
+            self.sig_v_arr = 0.
+        
         delta = delta_field(cartesian_pos_r)
-
         self.precomputed = [r, V_r, delta]
 
     def set_fixed_V_ext(self, V_ext_fixed):
@@ -100,10 +104,10 @@ class fwd_lkl:
             quadrupole_matrix = np.array([[U_xx, U_xy, U_xz],[U_xy, U_yy, U_yz],[U_xz, U_yz, U_zz]])
             flow_params = flow_params[:-5]
         if(self.vary_sig_v):
-            sig_v = flow_params[0]
+            sig_v0 = flow_params[0]
             flow_params = flow_params[1:]
         else:
-            sig_v = 150.
+            sig_v0 = 150.
         if(self.radial_beta):
             beta_slope = flow_params[0]
             flow_params = flow_params[1:]
@@ -125,16 +129,17 @@ class fwd_lkl:
             v_bulk_r = v_bulk_r + v_bulk_quad
         N_GAL = self.r_hat.shape[1]
         if(self.radial_beta):
-            # print(r.shape, V_r.shape)
             z_pred_r = ((1 + (v_bulk_r + (beta + beta_slope * (r/100.))*V_r)/c)*(1 + z_cos(r, cosmo_pars)) - 1.0)
         else:
             z_pred_r = ((1 + (v_bulk_r + beta*V_r)/c)*(1 + z_cos(r, cosmo_pars)) - 1.0)
-        delta_z_sig_v = c*(z_pred_r - self.z_obs)/(sig_v)
-
+        
         catalog_params = params[self.start_index:self.end_index]
         pr = self.p_r(catalog_params)
         pr_norm = np.trapz(pr, r, axis=0)
 
+        sig_v = np.sqrt(sig_v0**2 + self.sig_v_arr**2)
+        
+        delta_z_sig_v = c*(z_pred_r - self.z_obs)/(sig_v)
         lnprob = np.sum(np.log(np.trapz((1.0/np.sqrt(2*np.pi*sig_v*sig_v))*np.exp(-0.5*delta_z_sig_v**2) * pr / pr_norm, axis=0)))
         if(np.isnan(lnprob)):
             return -np.inf

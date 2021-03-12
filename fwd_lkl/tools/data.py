@@ -23,5 +23,11 @@ def process_reconstruction_data(data_file, box_size, corner, N_grid):
     delta_data = np.array(f['density'])
     delta_interp = RegularGridInterpolator((X, Y, Z), delta_data)
 
+    try:
+        sig_v = f['sigma_v'][:]
+        sig_v_interp = RegularGridInterpolator((X, Y, Z), sig_v)
+    except:
+        sig_v_interp = None
+    f.close()
     print('Exiting reconstruction data interpolation....')
-    return delta_interp, [v_x_interp, v_y_interp, v_z_interp]
+    return delta_interp, [v_x_interp, v_y_interp, v_z_interp], sig_v_interp

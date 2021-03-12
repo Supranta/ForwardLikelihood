@@ -37,7 +37,7 @@ if(fix_V_ext):
 home_dir = os.path.abspath('.')
 output_dir = home_dir+'/'+output_dir
 data_file = home_dir+'/'+data_file
-delta_field, v_field = process_reconstruction_data(data_file, box_size, corner, N_grid)
+delta_field, v_field, sig_v_field = process_reconstruction_data(data_file, box_size, corner, N_grid)
 
 N_FLOW_PARAMS = num_flow_params(fix_V_ext, vary_sig_v, add_quadrupole, radial_beta)
 N = N_FLOW_PARAMS
@@ -48,7 +48,7 @@ catalog_objs = []
 for i, catalog in enumerate(catalogs):
         v_data_type, rescale_distance, add_sigma_int, v_data_file, lognormal = catalog
         obj = create_catalog_obj(v_data_type, v_data_file, czlow, czhigh,\
-            N, fix_V_ext, vary_sig_v, add_quadrupole, radial_beta, v_field, delta_field, coord_system, lognormal, rescale_distance, add_sigma_int)
+            N, fix_V_ext, vary_sig_v, add_quadrupole, radial_beta, v_field, delta_field, sig_v_field, coord_system, lognormal, rescale_distance, add_sigma_int)
         if(fix_V_ext):
                 obj.set_fixed_V_ext(V_ext_fixed)
         catalog_objs.append(obj)

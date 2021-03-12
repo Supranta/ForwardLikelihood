@@ -6,10 +6,10 @@ import numpy as np
 from fwd_lkl.fwd_lkl import fwd_lkl
 
 class simple_distance(fwd_lkl):
-    def __init__(self, v_data, v_field, delta_field, coord_system,
+    def __init__(self, v_data, v_field, delta_field, sigma_v_rec_field, coord_system,
                         fix_V_ext, vary_sig_v, add_quadrupole, radial_beta,
                         start_index, rescale_distance, add_sigma_int, lognormal, N_POINTS=500):
-        super().__init__(v_data, v_field, delta_field, coord_system,
+        super().__init__(v_data, v_field, delta_field, sigma_v_rec_field, coord_system,
                             fix_V_ext, vary_sig_v, add_quadrupole, radial_beta,
                             lognormal)
         self.rhMpc = v_data[3]

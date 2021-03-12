@@ -7,10 +7,10 @@ from fwd_lkl.fwd_lkl import fwd_lkl
 from .tools.cosmological_funcs import r_from_mu
 
 class sn_lc_fit(fwd_lkl):
-    def __init__(self, v_data, v_field, delta_field, coord_system,
+    def __init__(self, v_data, v_field, delta_field, sigma_v_rec_field, coord_system,
                     fix_V_ext, vary_sig_v, add_quadrupole, radial_beta,
                     start_index, lognormal, N_POINTS=500):
-        super().__init__(v_data, v_field, delta_field, coord_system,
+        super().__init__(v_data, v_field, delta_field, sigma_v_rec_field, coord_system,
                             fix_V_ext, vary_sig_v, add_quadrupole, radial_beta, 
                             lognormal)
         self.mB = v_data[3]
