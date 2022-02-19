@@ -16,7 +16,7 @@ from fwd_lkl.tools.config_dist_cov import config_io, config_PV_data, config_box,
 
 configfile = sys.argv[1]
 
-N_SAVE = 2
+N_SAVE = 5
 # cosmo_pars = [0.315, 0.685]
 
 output_dir, reconstruction_data_file   = config_io(configfile)
@@ -63,6 +63,8 @@ for i in range(N_MCMC):
         print("Flow_params: "+str(x[:4]))
         if(i%N_SAVE==0):
             with h5.File(output_dir+'/mcmc_%d.h5'%(i//N_SAVE),'w') as f:
+                f['flow_params'] = x[:4]
+                """
                 if dist_cov is None:
                     f['flow_params'] = x
                 else:
@@ -70,5 +72,6 @@ for i in range(N_MCMC):
                     f['mu_sys_prior'] = mu_sys_prior
                     f['flow_params'] = x[:4]
                     f['mu_sys']      = x[4:]
+                """
                 f['lnprob']      = lnprob
                 f['KE']          = KE

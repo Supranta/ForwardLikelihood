@@ -50,7 +50,11 @@ class DistCov():
         cartesian_pos_r = (np.expand_dims(self.r_hat.T, axis=1)*np.tile(np.expand_dims(r, axis=0),(1,1,3)))
         density_term = (1. + delta).T
         delta_mu = 5*jnp.log10(r/d)
-        return r * r * jnp.exp(-0.5*(delta_mu/e_mu)**2) * density_term
+        p_mu_r = jnp.exp(-0.5*(delta_mu/e_mu)**2) / jnp.sqrt(2. * np.pi * e_mu**2)
+        pr = r * r * density_term     
+        pr_norm = jnp.trapz(pr, r, axis=0)
+        pr = pr / pr_norm
+        return pr * p_mu_r
 
     def catalog_lnprob(self, flow_params, mu_sys):
         sig_v = 150.
@@ -64,9 +68,8 @@ class DistCov():
         delta_z_sig_v = c*(z_pred_r - self.z_obs)/(sig_v)
 
         pr = self.p_r(mu_sys)
-        pr_norm = jnp.trapz(pr, r, axis=0)
-
-        lnprob = jnp.sum(jnp.log(jnp.trapz((1.0/np.sqrt(2*np.pi*sig_v*sig_v))*jnp.exp(-0.5*delta_z_sig_v**2) * pr / pr_norm, axis=0)))
+        
+        lnprob = jnp.sum(jnp.log(jnp.trapz((1.0/np.sqrt(2*np.pi*sig_v*sig_v))*jnp.exp(-0.5*delta_z_sig_v**2) * pr, r, axis=0)))
 
         return lnprob
 
